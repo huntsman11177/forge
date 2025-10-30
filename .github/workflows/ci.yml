@@ -33,6 +33,10 @@ jobs:
         run: cargo fmt -- --check
       - name: Cargo clippy
         run: cargo clippy --all-targets -- -D warnings
+      - name: Validate Forge graph schema
+        run: |
+          python -m pip install --upgrade pip jsonschema
+          python -m jsonschema --schema https://json-schema.org/draft/2020-12/schema --instance ../../forge_spec/graph_schema.json
       - name: Cargo test
         run: cargo test --all-features
 

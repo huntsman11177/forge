@@ -1,4 +1,6 @@
 mod analyzer_service;
+mod plugin_registry;
+mod plugin_sandbox;
 mod state_adapter;
 
 pub use analyzer_service::{
@@ -8,6 +10,8 @@ pub use analyzer_service::{
     AnalyzerInvocation,
     AnalyzerService,
 };
+pub use plugin_registry::{PluginDescriptor, PluginRegistry, PluginRegistryError};
+pub use plugin_sandbox::{PluginSandbox, SandboxError};
 pub use state_adapter::{ResolvedBinding, RiverpodAdapter, StateAdapter};
 
 use once_cell::sync::Lazy;
