@@ -1,0 +1,228 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://forge.dev/schemas/forgegraph_v1.json",
+  "title": "ForgeGraph v1.0",
+  "description": "Canonical Forge Schema Language (FSL) — single source of truth for UI, layout, bindings, and logic references.",
+  "type": "object",
+  "required": ["forge_schema_version", "project", "nodes", "metadata"],
+  "additionalProperties": false,
+
+  "properties": {
+    "forge_schema_version": {
+      "type": "string",
+      "pattern": "^1\\.0\\.0$",
+      "description": "Schema version. v1.0.0 is the first stable release."
+    },
+
+    "project": {
+      "type": "object",
+      "required": ["id", "name", "created_at", "updated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": ["string", "null"] },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
+        "root_node_id": { "type": ["string", "null"], "format": "uuid" }
+      }
+    },
+
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "created_by": { "type": "string" },
+        "last_modified_by": { "type": "string" },
+        "last_modified_at": { "type": "string", "format": "date-time" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "migration": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "migrated_from": { "type": ["string", "null"] },
+            "migrated_at": { "type": ["string", "null"], "format": "date-time" }
+          }
+        }
+      }
+    },
+
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "props", "version"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "type": { "type": "string", "description": "Widget type identifier, e.g., Container, Text, Scaffold" },
+          "displayName": { "type": "string" },
+          "props": {
+            "type": "object",
+            "description": "Key-value properties for the node. Values should be JSON primitives or structured objects.",
+            "additionalProperties": true
+          },
+          "children": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "Ordered list of child node IDs"
+          },
+          "bindings": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["bindingType", "expression"],
+              "properties": {
+                "bindingType": { "type": "string", "enum": ["provider", "expression", "oneway", "twoway"] },
+                "expression": { "type": "string" },
+                "metadata": { "type": "object", "additionalProperties": true }
+              }
+            },
+            "description": "Bindings from props to providers or expressions"
+          },
+          "logicRefs": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "References to Flow Graph node IDs that affect this node (e.g., onClick handlers)"
+          },
+          "annotations": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Preserve developer annotations/comments. For example: {\"forge:id\":\"...\"}"
+          },
+          "version": { "type": "integer", "minimum": 1, "description": "Node-level version incremented on edits" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+
+    "flows": {
+      "type": "array",
+      "description": "Optional logic/flow graph definitions. Each flow references nodes by ID.",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "nodes"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string", "enum": ["flow", "subflow", "api"] },
+          "name": { "type": "string" },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "nodeType"],
+              "properties": {
+                "id": { "type": "string" },
+                "nodeType": { "type": "string" },
+                "props": { "type": "object", "additionalProperties": true },
+                "inputs": { "type": "array", "items": { "type": "string" } },
+                "outputs": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          },
+          "edges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["from", "to"],
+              "properties": {
+                "from": { "type": "string" },
+                "to": { "type": "string" },
+                "metadata": { "type": "object", "additionalProperties": true }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "providers": {
+      "type": "array",
+      "description": "State provider declarations (Riverpod/Bloc/etc.). These are adapter-agnostic provider nodes.",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "adapter", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "adapter": { "type": "string", "description": "Adapter id: 'riverpod','bloc','getx', or custom" },
+          "type": { "type": "string", "description": "Type annotation, e.g., 'int','String','List<Item>'" },
+          "initialValue": { "type": ["string", "number", "boolean", "object", "null"] },
+          "metadata": { "type": "object", "additionalProperties": true }
+        }
+      }
+    },
+
+    "artifacts": {
+      "type": "object",
+      "description": "Build artefacts and references (optional). Not required, kept for convenience.",
+      "additionalProperties": true
+    }
+  },
+
+  "examples": [
+    {
+      "forge_schema_version": "1.0.0",
+      "project": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "name": "Todo App",
+        "description": "Minimal demo project",
+        "created_at": "2025-10-30T00:00:00Z",
+        "updated_at": "2025-10-30T00:00:00Z",
+        "root_node_id": "11111111-1111-1111-1111-111111111111"
+      },
+      "metadata": {
+        "created_by": "subrata@forge.dev",
+        "last_modified_by": "subrata@forge.dev",
+        "last_modified_at": "2025-10-30T00:00:00Z",
+        "tags": ["demo", "todo"]
+      },
+      "nodes": [
+        {
+          "id": "11111111-1111-1111-1111-111111111111",
+          "type": "Scaffold",
+          "displayName": "MainScaffold",
+          "props": {
+            "appBarTitle": "Todo"
+          },
+          "children": [
+            "22222222-2222-2222-2222-222222222222"
+          ],
+          "bindings": {},
+          "annotations": { "forge:source": "imported:main.dart:HomeScreen" },
+          "version": 1,
+          "created_at": "2025-10-30T00:00:00Z",
+          "updated_at": "2025-10-30T00:00:00Z"
+        },
+        {
+          "id": "22222222-2222-2222-2222-222222222222",
+          "type": "Column",
+          "displayName": "MainColumn",
+          "props": {},
+          "children": [
+            "33333333-3333-3333-3333-333333333333"
+          ],
+          "bindings": {},
+          "version": 1,
+          "created_at": "2025-10-30T00:00:00Z",
+          "updated_at": "2025-10-30T00:00:00Z"
+        },
+        {
+          "id": "33333333-3333-3333-3333-333333333333",
+          "type": "Text",
+          "displayName": "WelcomeText",
+          "props": { "value": "Hello, Forge!" },
+          "children": [],
+          "bindings": {},
+          "version": 1
+        }
+      ],
+      "flows": [],
+      "providers": []
+    }
+  ]
+}

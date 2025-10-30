@@ -60,6 +60,20 @@ Forge is a visual IDE and runtime for Flutter applications that turns UI design,
 4. **Export/Commit** – Generate formatted Dart, write to disk, and optionally open a PR via Git integrations.@Main.md#282-305 @Main.md#748-777
 5. **Package/Publish** (optional) – Bundle constructs into ForgePkg assets for reuse or sale.@Main.md#1222-3200
 
+### Local Tooling Commands
+
+- **Bootstrap the workspace**
+  ```bash
+  ./scripts/setup.sh
+  ```
+  Installs Melos, verifies Flutter and Rust toolchains, and builds the `forge_engine_cli` binary.
+
+- **Generate Forge graphs from Dart**
+  ```bash
+  dart run packages/forge_cli/bin/forge_cli.dart import --file path/to/screen.dart --output build/graph.json
+  ```
+  Requires a release build of the engine (produced by `setup.sh` or `cargo build --release` in `packages/forge_engine`). Omit `--output` to stream JSON to stdout.
+
 ## System Architecture
 
 ```

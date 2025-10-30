@@ -1,0 +1,17 @@
+.env
+cargo.lock
+
+# Rust build artifacts
+/target/
+/.cargo-target/
+/packages/**/target/
+
+# Dart / Flutter tooling outputs
+.dart_tool/
+packages/**/.dart_tool/
+.packages
+.pub/
+build/
+packages/**/build/
+.flutter-plugins
+.flutter-plugins-dependencies
