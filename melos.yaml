@@ -1,0 +1,14 @@
+name: forge
+packages:
+  - packages/**
+
+scripts:
+  format:
+    run: |
+      melos exec --concurrency=1 -- "dart format --output=none --set-exit-if-changed ."
+  analyze:
+    run: |
+      melos exec --fail-fast --dir-exists lib -- "dart analyze"
+  test:
+    run: |
+      melos exec --fail-fast --dir-exists test -- "dart test"
