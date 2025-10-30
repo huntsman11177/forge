@@ -52,7 +52,10 @@ impl PluginSandbox {
         Self::with_options(base_dir, false)
     }
 
-    pub fn with_options<P: AsRef<Path>>(base_dir: P, allow_absolute_paths: bool) -> Result<Self, SandboxError> {
+    pub fn with_options<P: AsRef<Path>>(
+        base_dir: P,
+        allow_absolute_paths: bool,
+    ) -> Result<Self, SandboxError> {
         let base_dir_ref = base_dir.as_ref();
         let metadata = fs::metadata(base_dir_ref).map_err(|err| match err.kind() {
             ErrorKind::NotFound => SandboxError::BaseDirectoryMissing {
@@ -70,15 +73,22 @@ impl PluginSandbox {
             });
         }
 
-        let canonical = base_dir_ref.canonicalize().map_err(|source| SandboxError::BaseDirectoryIo {
-            path: base_dir_ref.display().to_string(),
-            source,
-        })?;
+        let canonical =
+            base_dir_ref
+                .canonicalize()
+                .map_err(|source| SandboxError::BaseDirectoryIo {
+                    path: base_dir_ref.display().to_string(),
+                    source,
+                })?;
 
         Ok(Self {
             base_dir: canonical,
             allow_absolute_paths,
         })
+    }
+
+    pub fn base_dir(&self) -> &Path {
+        &self.base_dir
     }
 
     /// Resolves the plugin entry path within the sandbox, ensuring it exists and is a file.
@@ -115,11 +125,13 @@ impl PluginSandbox {
             });
         }
 
-        let canonical = candidate.canonicalize().map_err(|source| SandboxError::EntryIo {
-            plugin_id: plugin.id.clone(),
-            path: candidate.display().to_string(),
-            source,
-        })?;
+        let canonical = candidate
+            .canonicalize()
+            .map_err(|source| SandboxError::EntryIo {
+                plugin_id: plugin.id.clone(),
+                path: candidate.display().to_string(),
+                source,
+            })?;
 
         if !self.allow_absolute_paths && !canonical.starts_with(&self.base_dir) {
             return Err(SandboxError::EntryOutsideSandbox {

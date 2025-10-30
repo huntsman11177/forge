@@ -76,19 +76,22 @@ impl PluginRegistry {
     }
 
     /// Validates optional plugin signatures against the binaries stored at `base_dir`.
-    pub fn validate_signatures<P: AsRef<Path>>(&self, base_dir: P) -> Result<(), PluginRegistryError> {
+    pub fn validate_signatures<P: AsRef<Path>>(
+        &self,
+        base_dir: P,
+    ) -> Result<(), PluginRegistryError> {
         let base_dir = base_dir.as_ref();
         for plugin in &self.plugins {
             let Some(signature) = plugin.signature.as_ref() else {
                 continue;
             };
 
-            let (algorithm, expected_hex) = signature
-                .split_once(':')
-                .ok_or_else(|| PluginRegistryError::InvalidSignatureFormat {
+            let (algorithm, expected_hex) = signature.split_once(':').ok_or_else(|| {
+                PluginRegistryError::InvalidSignatureFormat {
                     id: plugin.id.clone(),
                     signature: signature.clone(),
-                })?;
+                }
+            })?;
 
             if !algorithm.eq_ignore_ascii_case("sha256") {
                 return Err(PluginRegistryError::UnsupportedSignatureAlgorithm {
@@ -178,8 +181,14 @@ impl PluginDescriptor {
             input_schema,
             output_schema,
             runtimes,
-            description: raw.description.map(|s| s.trim().to_string()).filter(|s| !s.is_empty()),
-            signature: raw.signature.map(|s| s.trim().to_string()).filter(|s| !s.is_empty()),
+            description: raw
+                .description
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty()),
+            signature: raw
+                .signature
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty()),
         })
     }
 }
@@ -189,7 +198,10 @@ fn require_non_empty(
     value: Option<String>,
     id: Option<&str>,
 ) -> Result<String, PluginRegistryError> {
-    match value.map(|v| v.trim().to_string()).filter(|v| !v.is_empty()) {
+    match value
+        .map(|v| v.trim().to_string())
+        .filter(|v| !v.is_empty())
+    {
         Some(val) => Ok(val),
         None => Err(PluginRegistryError::InvalidEntry {
             id: id.unwrap_or("<unknown>").to_string(),
@@ -262,8 +274,14 @@ mod tests {
         let inspector = &registry.plugins[0];
         assert_eq!(inspector.id, "inspector.v1");
         assert_eq!(inspector.entry, "./plugins/inspector/inspector.wasm");
-        assert_eq!(inspector.runtimes, vec!["local".to_string(), "cloud".to_string()]);
-        assert_eq!(inspector.description.as_deref(), Some("Analyzes widget tree for potential issues"));
+        assert_eq!(
+            inspector.runtimes,
+            vec!["local".to_string(), "cloud".to_string()]
+        );
+        assert_eq!(
+            inspector.description.as_deref(),
+            Some("Analyzes widget tree for potential issues")
+        );
     }
 
     #[test]
@@ -320,7 +338,10 @@ mod tests {
         let mut hasher = Sha256::new();
         hasher.update(b"plugin-bytes");
         let digest = hasher.finalize();
-        let expected = digest.iter().map(|byte| format!("{:02x}", byte)).collect::<String>();
+        let expected = digest
+            .iter()
+            .map(|byte| format!("{:02x}", byte))
+            .collect::<String>();
 
         let yaml = format!(
             "- id: sig\n  name: Sig\n  entry: {}\n  inputSchema: a.json\n  outputSchema: b.json\n  runtimes: [\"local\"]\n  signature: \"sha256:{}\"\n",

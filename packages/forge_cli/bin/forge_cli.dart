@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:forge_cli/src/analyze_command.dart';
 import 'package:forge_cli/src/import_command.dart';
 import 'package:forge_cli/src/version_command.dart';
 import 'package:forge_cli/src/workspace_context.dart';
@@ -12,6 +13,7 @@ Future<void> main(List<String> arguments) async {
     'Forge tooling for import/export, validation, and packaging workflows.',
   )
     ..addCommand(ImportCommand(workspace))
+    ..addCommand(AnalyzeCommand(workspace))
     ..addCommand(VersionCommand(workspace));
 
   try {

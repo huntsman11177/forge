@@ -2,9 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:path/path.dart' as p;
-
 import 'workspace_context.dart';
+import 'engine_bridge.dart';
 
 /// Runs the Forge engine to parse Dart source into ForgeGraph JSON.
 class ImportCommand extends Command<int> {
@@ -16,7 +15,8 @@ class ImportCommand extends Command<int> {
       )
       ..addOption(
         'output',
-        help: 'Optional file path to write ForgeGraph JSON. Defaults to stdout.',
+        help:
+            'Optional file path to write ForgeGraph JSON. Defaults to stdout.',
       );
   }
 
@@ -42,7 +42,7 @@ class ImportCommand extends Command<int> {
       return 66; // EX_NOINPUT
     }
 
-    final engineBinary = _resolveEngineBinary();
+    final engineBinary = resolveEngineBinary(_workspace);
     final processResult = await Process.run(
       engineBinary,
       ['--file', input.absolute.path],
@@ -67,28 +67,5 @@ class ImportCommand extends Command<int> {
     }
 
     return 0;
-  }
-
-  String _resolveEngineBinary() {
-    final platform = Platform.operatingSystem;
-    final binaryName = platform == 'windows'
-        ? 'forge_engine_cli.exe'
-        : 'forge_engine_cli';
-    final binaryPath = p.join(
-      _workspace.workspaceRoot,
-      'packages',
-      'forge_engine',
-      'target',
-      'release',
-      binaryName,
-    );
-
-    if (!File(binaryPath).existsSync()) {
-      throw WorkspaceContextException(
-        'Forge engine binary not found at $binaryPath. Run `cargo build --release` '
-        'inside packages/forge_engine to compile it.',
-      );
-    }
-    return binaryPath;
   }
 }

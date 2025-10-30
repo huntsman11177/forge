@@ -1,15 +1,16 @@
 mod analyzer_service;
+mod merge_engine;
 mod plugin_registry;
 mod plugin_sandbox;
 mod state_adapter;
 
+/// Semantic version for the analysis report JSON contract emitted by the CLI.
+pub const ANALYSIS_REPORT_VERSION: &str = "1.0.0";
+
 pub use analyzer_service::{
-    AnalysisDecision,
-    AnalysisOutcome,
-    AnalysisStrategy,
-    AnalyzerInvocation,
-    AnalyzerService,
+    AnalysisDecision, AnalysisOutcome, AnalysisStrategy, AnalyzerInvocation, AnalyzerService,
 };
+pub use merge_engine::{merge_screen_graphs, MergeConflict, MergeOutcome};
 pub use plugin_registry::{PluginDescriptor, PluginRegistry, PluginRegistryError};
 pub use plugin_sandbox::{PluginSandbox, SandboxError};
 pub use state_adapter::{ResolvedBinding, RiverpodAdapter, StateAdapter};
@@ -147,7 +148,7 @@ pub struct BindingReference {
 }
 
 /// Represents a widget tree captured by the Forge graph format.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct WidgetNode {
     pub widget: String,
     #[serde(default)]
@@ -157,7 +158,7 @@ pub struct WidgetNode {
 }
 
 /// Top-level graph describing a Flutter screen.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct ScreenGraph {
     pub id: String,
     pub root: WidgetNode,
@@ -551,13 +552,12 @@ fn split_key_value(entry: &str) -> Option<(&str, &str)> {
                     angle -= 1;
                 }
             }
-            ':'
-                if !single_quote
-                    && !double_quote
-                    && paren == 0
-                    && bracket == 0
-                    && brace == 0
-                    && angle == 0 =>
+            ':' if !single_quote
+                && !double_quote
+                && paren == 0
+                && bracket == 0
+                && brace == 0
+                && angle == 0 =>
             {
                 let key = entry[..idx].trim();
                 if key.is_empty() {
@@ -633,10 +633,13 @@ fn parse_binding(raw: &str) -> Option<PropValue> {
             || candidate.ends_with('.')
             || candidate.split('.').any(|segment| {
                 segment.is_empty()
-                    || !segment
-                        .chars()
-                        .enumerate()
-                        .all(|(i, c)| if i == 0 { c.is_alphabetic() || c == '_' } else { c.is_alphanumeric() || c == '_' })
+                    || !segment.chars().enumerate().all(|(i, c)| {
+                        if i == 0 {
+                            c.is_alphabetic() || c == '_'
+                        } else {
+                            c.is_alphanumeric() || c == '_'
+                        }
+                    })
             })
         {
             return None;
@@ -870,7 +873,11 @@ mod tests {
     use serde_json::Value;
 
     fn assert_prop_literal(node: &WidgetNode, key: &str, expected: &str) {
-        match node.props.get(key).unwrap_or_else(|| panic!("missing prop {key}")) {
+        match node
+            .props
+            .get(key)
+            .unwrap_or_else(|| panic!("missing prop {key}"))
+        {
             PropValue::Literal { value } => match value {
                 Value::String(s) => assert_eq!(s, expected),
                 Value::Bool(b) => assert_eq!(expected, if *b { "true" } else { "false" }),
@@ -882,13 +889,12 @@ mod tests {
         }
     }
 
-    fn assert_prop_binding(
-        node: &WidgetNode,
-        key: &str,
-        provider: &str,
-        path: Option<&str>,
-    ) {
-        match node.props.get(key).unwrap_or_else(|| panic!("missing prop {key}")) {
+    fn assert_prop_binding(node: &WidgetNode, key: &str, provider: &str, path: Option<&str>) {
+        match node
+            .props
+            .get(key)
+            .unwrap_or_else(|| panic!("missing prop {key}"))
+        {
             PropValue::Binding { binding } => {
                 assert_eq!(binding.target, BindingTarget::Provider);
                 assert_eq!(binding.reference, provider);

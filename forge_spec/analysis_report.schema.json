@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forge.dev/spec/analysis_report.schema.json",
+  "title": "ForgeAnalysisReport",
+  "type": "object",
+  "required": ["outcomes", "total_conflicts"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Semantic version of the analysis report schema."
+    },
+    "outcomes": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/AnalysisOutcome" }
+    },
+    "total_conflicts": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "definitions": {
+    "AnalysisOutcome": {
+      "type": "object",
+      "required": ["decision", "analyzer_invoked", "merge", "quick_graph"],
+      "additionalProperties": false,
+      "properties": {
+        "decision": { "$ref": "#/definitions/AnalysisDecision" },
+        "analyzer_invoked": { "type": "boolean" },
+        "diagnostics": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "quick_graph": { "$ref": "#/definitions/ScreenGraph" },
+        "analyzer_graph": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/definitions/ScreenGraph" }
+          ]
+        },
+        "merge": { "$ref": "#/definitions/MergeOutcome" }
+      }
+    },
+    "AnalysisDecision": {
+      "type": "object",
+      "required": ["strategy", "native_confidence", "threshold"],
+      "additionalProperties": false,
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": ["Native", "AnalyzerFallback"]
+        },
+        "native_confidence": { "type": "number" },
+        "threshold": { "type": "number" }
+      }
+    },
+    "MergeOutcome": {
+      "type": "object",
+      "required": ["screen", "conflicts"],
+      "additionalProperties": false,
+      "properties": {
+        "screen": { "$ref": "#/definitions/ScreenGraph" },
+        "conflicts": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/MergeConflict" }
+        }
+      }
+    },
+    "MergeConflict": {
+      "type": "object",
+      "required": ["path"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "base": { "type": ["object", "array", "string", "number", "boolean", "null"] },
+        "left": { "type": ["object", "array", "string", "number", "boolean", "null"] },
+        "right": { "type": ["object", "array", "string", "number", "boolean", "null"] }
+      }
+    },
+    "ScreenGraph": {
+      "type": "object",
+      "required": ["id", "root"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "root": { "$ref": "#/definitions/WidgetNode" }
+      }
+    },
+    "WidgetNode": {
+      "type": "object",
+      "required": ["widget"],
+      "additionalProperties": false,
+      "properties": {
+        "widget": { "type": "string" },
+        "props": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/definitions/PropValue" },
+          "default": {}
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/WidgetNode" },
+          "default": []
+        }
+      }
+    },
+    "PropValue": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["literal", "expression", "binding"]
+        },
+        "value": { "type": ["string", "number", "boolean", "null"] },
+        "expression": { "type": "string" },
+        "binding": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}
