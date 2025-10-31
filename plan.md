@@ -4128,6 +4128,63 @@ Forge’s engineering roadmap already reads like a senior architecture review. T
 
 ---
 
+## 🧭 Post-Tier Roadmap — Canvas & Importer Acceleration (65 % Complete)
+
+Forge now sits at the cusp of Tier 5. CI, benchmarking, and architecture scaffolding are locked. The next push converts the foundation into a user-facing Canvas + Importer experience while laying paths for runtime, ecosystem, and AI acceleration.
+
+### ⏱ Immediate Tier 5 Build Targets
+
+| Area | Goal | Why It Matters | Key Deliverables |
+| --- | --- | --- | --- |
+| 1️⃣ Schema Writer | Implement reverse serialization (ForgeGraph → FSL/JSON). | Enables saving Canvas edits, exporting projects, and full round-trips. | `schema_writer.rs`, `forge export` CLI, parity unit tests. |
+| 2️⃣ Importer / Parser Bridge | Parse Flutter/React codebases → FSL. | Unlocks “import project” workflows instead of hand-editing JSON. | `forge import --framework flutter`, AnalyzerService integration. |
+| 3️⃣ Canvas UI | Ship the visual editor (web/desktop). | Product face of Forge; generates JSON automatically. | `forge_canvas/` package, drag-drop, property panel, live preview. |
+| 4️⃣ Schema Watcher | Detect file edits and hot reload Canvas. | Keeps Canvas synchronized with filesystem/code edits. | Background watcher (Rust `notify` / Dart `watcher`). |
+| 5️⃣ User Data / Session Store | Persist recent projects + settings locally. | Required before sync/marketplace; improves UX continuity. | `forge_localdb` (SQLite or sled) module. |
+
+### 🧱 Tier 6 — Runtime & Ecosystem Objectives
+
+| Area | Purpose | Deliverables |
+| --- | --- | --- |
+| 1️⃣ Logic Debugger | Visualize LogicGraph execution (step/trace providers). | `forge simulate --trace`, Canvas runtime overlay. |
+| 2️⃣ Multi-user Sync | Enable collaborative editing via CRDT/OT. | `merge_engine_v2`, real-time collaboration API. |
+| 3️⃣ Marketplace Backend | Host packages, enforce schema validation, manage versions. | FastAPI service, PostgreSQL schema, CI validators. |
+| 4️⃣ Plugin SDK | Expose RendererAdapter / StateAdapter extensibility. | SDK crate + docs, sandbox contract. |
+| 5️⃣ Distribution | Ship CLI + Canvas binaries. | GitHub Actions release job, Homebrew/Scoop/cargo installers. |
+
+### 🧠 Tier 7 — AI & Automation Horizons
+
+| Module | Function | Notes |
+| --- | --- | --- |
+| Forge Copilot | Natural language → FSL graph. | LLM prompting with schema constraints + AST validation. |
+| AI Validator | Sanitize and auto-test AI-generated UI code. | Builds on existing validator/ADR pipeline. |
+| Auto-Layout / Design Hints | Recommend responsive layouts and theming. | TensorFlow Lite or heuristic engine atop telemetry. |
+
+### 📈 Suggested Execution Order (Now → Product Release)
+
+| Sprint | Focus | Output |
+| --- | --- | --- |
+| S1 | Schema Writer + Importer | Full round-trip `JSON ⇄ Code`. |
+| S2 | Canvas UI Prototype | Visual builder emitting ForgeGraph locally. |
+| S3 | Live Preview + Logic Debug | `forge simulate` + Canvas runtime overlay. |
+| S4 | Marketplace MVP + Plugin SDK | Public package sharing + third-party renderers. |
+| S5 | Cloud Sync + Collaboration | Multi-user editing, auth, sync services. |
+| S6 | AI Assistants | Text-to-UI + auto-refactor flows. |
+| S7 | Product Launch | Forge Canvas App + Forge CLI v1.0. |
+
+### 🔩 Engineering Pre-flight Checklist
+
+- Finalize `schema_writer.rs` spec mirroring parser semantics.  
+- Define CLI `forge export` / `forge import` syntax and validation.  
+- Add serialization round-trip tests across core widgets and flows.  
+- Confirm Canvas tech stack (Flutter recommended for parity with output).  
+- Prepare Renderer Registry APIs for GUI invocation.  
+- Freeze `forge_schema_version` tag at `1.0.0` for Tier 5 deliveries.
+
+> Tier 5 blueprint (file paths, module stubs, CLI contracts, data flow) can be generated on demand when ready to start implementation.
+
+---
+
 # PHASE 4: GROWTH & SCALE
 **Duration:** Months 22-30 (9 months)  
 **Team Size:** 10-15 people  

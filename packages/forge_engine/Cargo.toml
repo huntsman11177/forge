@@ -24,5 +24,17 @@ chrono = { version = "0.4", features = ["serde", "clock"] }
 [dev-dependencies]
 insta = "1.39"
 tempfile = "3.10"
-criterion = { version = "0.5", features = ["html_reports"] }
+criterion = { version = "0.5", features = ["html_reports"], default-features = false }
 jsonschema = "0.17"
+
+[[bench]]
+name = "codegen_multi"
+harness = false
+
+[[bench]]
+name = "bench_parser"
+harness = false
+
+[[bench]]
+name = "logic_runtime"
+harness = false

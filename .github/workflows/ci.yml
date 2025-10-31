@@ -57,3 +57,27 @@ jobs:
         run: melos run format
       - name: Dart analyze
         run: melos run analyze
+
+  benchmarks:
+    needs: rust
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          profile: minimal
+      - name: Cargo bench
+        run: cargo bench
+        working-directory: packages/forge_engine
+      - name: Export Criterion summary
+        run: python3 scripts/export_benchmarks.py .cargo-target/criterion target/criterion_summary.json
+      - name: Compare against baseline
+        run: |
+          python3 scripts/compare_benchmarks.py \
+            packages/forge_engine/benches/criterion_baseline.json \
+            target/criterion_summary.json \
+            --max-regression 0.1 \
+            --absolute-slack 1.0

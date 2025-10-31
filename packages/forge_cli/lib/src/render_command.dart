@@ -22,7 +22,8 @@ class RenderCommand extends Command<int> {
         abbr: 't',
         allowed: _supportedFrameworks,
         defaultsTo: _defaultFramework,
-        help: 'Target framework to render (${_supportedFrameworks.join(', ')}).',
+        help:
+            'Target framework to render (${_supportedFrameworks.join(', ')}).',
       )
       ..addOption(
         'out-dir',
@@ -31,7 +32,8 @@ class RenderCommand extends Command<int> {
       )
       ..addFlag(
         'emit-manifest',
-        help: 'Emit framework-specific dependency manifest (e.g., pubspec.yaml, package.json).',
+        help:
+            'Emit framework-specific dependency manifest (e.g., pubspec.yaml, package.json).',
         defaultsTo: false,
       );
   }
@@ -58,7 +60,8 @@ class RenderCommand extends Command<int> {
       return 66; // EX_NOINPUT
     }
 
-    final framework = (argResults?['framework'] as String?) ?? _defaultFramework;
+    final framework =
+        (argResults?['framework'] as String?) ?? _defaultFramework;
     final outDir = argResults?['out-dir'] as String?;
 
     final args = <String>[

@@ -1,8 +1,9 @@
 use clap::{Parser, Subcommand};
 use forge_engine::{
     build_graphs_from_source, generate_manifest, get_renderer, read_graph, renderer_names,
-    simulate_flow, AnalysisOutcome, AnalyzerService, EvalConfig, LogicError, LogicGraph,
-    ManifestKind, RenderContext, RenderOptions, RiverpodAdapter,
+    simulate_flow, validate_graph_schema, AnalysisOutcome, AnalyzerService, EvalConfig, ForgeGraph,
+    LogicError, LogicGraph, ManifestKind, RenderContext, RenderOptions, RiverpodAdapter,
+    SchemaProject, SchemaWriter,
 };
 use serde::Serialize;
 use serde_json::{self, Value};
@@ -22,6 +23,93 @@ struct Cli {
 
     #[command(subcommand)]
     command: Option<Commands>,
+}
+
+fn run_export(
+    screen_files: &[PathBuf],
+    logic_files: &[PathBuf],
+    out: Option<&Path>,
+    project_id: Option<&str>,
+    project_name: Option<&str>,
+) -> Result<i32, String> {
+    if screen_files.is_empty() && logic_files.is_empty() {
+        return Err("At least one --file/--screen or --logic argument is required".into());
+    }
+
+    let mut screens = Vec::new();
+    for path in screen_files {
+        let graph = read_graph(path).map_err(|err| err.to_string())?;
+        screens.push(graph);
+    }
+
+    let mut logic_graphs = Vec::new();
+    for path in logic_files {
+        let graph = read_logic_graph(path)?;
+        logic_graphs.push(graph);
+    }
+
+    let default_name = screen_files
+        .first()
+        .and_then(|path| path.file_stem())
+        .and_then(|stem| stem.to_str())
+        .unwrap_or("Forge Project");
+    let project = SchemaProject {
+        id: project_id.unwrap_or("forge_project").to_string(),
+        name: project_name.unwrap_or(default_name).to_string(),
+        description: None,
+    };
+
+    let graph = ForgeGraph::new(project)
+        .with_screens(screens)
+        .with_logic(logic_graphs);
+    let document = SchemaWriter::from_graph(graph);
+    let payload = document
+        .to_string_pretty()
+        .map_err(|err| format!("Failed to serialize schema document: {err}"))?;
+
+    validate_graph_schema(&payload).map_err(|err| format!("Schema validation failed: {err}"))?;
+
+    if let Some(path) = out {
+        if let Some(parent) = path.parent() {
+            fs::create_dir_all(parent).map_err(|err| {
+                format!(
+                    "Failed to create output directory {}: {err}",
+                    parent.display()
+                )
+            })?;
+        }
+        fs::write(path, payload)
+            .map_err(|err| format!("Failed to write {}: {err}", path.display()))?;
+    } else {
+        println!("{}", payload);
+    }
+
+    Ok(0)
+}
+
+fn validate_schema(payload: &str) -> Result<(), String> {
+    static VALIDATOR: once_cell::sync::OnceCell<JSONSchema> = once_cell::sync::OnceCell::new();
+    let validator = VALIDATOR.get_or_try_init(|| {
+        let schema_src = include_str!("../../../forge_spec/graph_schema.json");
+        let json: serde_json::Value = serde_json::from_str(schema_src)
+            .map_err(|err| format!("Invalid graph schema JSON: {err}"))?;
+        JSONSchema::compile(&json).map_err(|err| format!("Failed to compile graph schema: {err}"))
+    })?;
+
+    let value: serde_json::Value = serde_json::from_str(payload)
+        .map_err(|err| format!("Export did not produce valid JSON: {err}"))?;
+
+    if let Err(errors) = validator.validate(&value) {
+        let messages: Vec<String> = errors
+            .map(|err| format!("{} at {}", err, err.instance_path))
+            .collect();
+        return Err(format!(
+            "Exported schema failed validation:\n{}",
+            messages.join("\n")
+        ));
+    }
+
+    Ok(())
 }
 
 fn run_simulate(
@@ -154,6 +242,19 @@ enum Commands {
         #[arg(long)]
         emit_manifest: bool,
     },
+    /// Exports a Forge graph file into canonical schema JSON
+    Export {
+        #[arg(long = "file", short = 'f', value_name = "SCREEN", alias = "screen")]
+        screens: Vec<PathBuf>,
+        #[arg(long, value_name = "LOGIC", alias = "logic-file")]
+        logic: Vec<PathBuf>,
+        #[arg(long, short = 'o')]
+        out: Option<PathBuf>,
+        #[arg(long, value_name = "PROJECT_ID")]
+        project_id: Option<String>,
+        #[arg(long, value_name = "PROJECT_NAME")]
+        project_name: Option<String>,
+    },
 }
 
 #[derive(Debug, Serialize)]
@@ -207,6 +308,19 @@ fn run_with_args(args: &[String]) -> Result<i32, String> {
             out_dir,
             emit_manifest,
         }) => run_render(&file, &framework, out_dir.as_deref(), emit_manifest),
+        Some(Commands::Export {
+            screens,
+            logic,
+            out,
+            project_id,
+            project_name,
+        }) => run_export(
+            &screens,
+            &logic,
+            out.as_deref(),
+            project_id.as_deref(),
+            project_name.as_deref(),
+        ),
         None => {
             let file = cli
                 .file
@@ -528,5 +642,30 @@ class SampleScreen extends StatelessWidget {
         let report = execute_analyze(&file_path, 0.1).unwrap();
         assert_eq!(report.outcomes.len(), 1);
         assert_eq!(report.total_conflicts, 1);
+    }
+
+    #[test]
+    fn export_writes_schema_document() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let screen_path = Path::new("fixtures/ui/angular_basic.json");
+        let out_path = temp_dir.path().join("export.json");
+
+        let args = vec![
+            "cli".to_string(),
+            "export".to_string(),
+            "--file".to_string(),
+            screen_path.to_string_lossy().into_owned(),
+            "--out".to_string(),
+            out_path.to_string_lossy().into_owned(),
+        ];
+
+        let exit = run_with_args(&args).expect("export command");
+        assert_eq!(exit, 0);
+
+        let payload = std::fs::read_to_string(&out_path).expect("read export output");
+        let value: serde_json::Value =
+            serde_json::from_str(&payload).expect("export output to parse");
+        assert_eq!(value["screens"].as_array().unwrap().len(), 1);
+        assert_eq!(value["forge_schema_version"], "1.0.0");
     }
 }

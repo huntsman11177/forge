@@ -1,87 +1,91 @@
 {
-  "id": "flow.branching",
-  "name": "Branching Flow",
-  "entry_nodes": ["start"],
-  "nodes": [
+  "flows": [
     {
-      "id": "start",
-      "kind": "eventEntry",
-      "name": "OnEvent",
-      "inputs": [],
-      "outputs": ["next"],
-      "props": {}
-    },
-    {
-      "id": "checkFlag",
-      "kind": "condition",
-      "name": "Check Flag",
-      "inputs": ["input"],
-      "outputs": ["then", "else"],
-      "props": {
-        "expression": "providers.flags.isEnabled",
-        "true_port": "then",
-        "false_port": "else"
-      }
-    },
-    {
-      "id": "enabledTransform",
-      "kind": "transform",
-      "name": "Enabled Path",
-      "inputs": ["value"],
-      "outputs": ["done"],
-      "props": {
-        "expression": "providers.data.value + 10"
-      }
-    },
-    {
-      "id": "disabledTransform",
-      "kind": "transform",
-      "name": "Disabled Path",
-      "inputs": ["value"],
-      "outputs": ["done"],
-      "props": {
-        "expression": "providers.data.value - 5"
-      }
-    },
-    {
-      "id": "finish",
-      "kind": "return",
-      "name": "Finish",
-      "inputs": ["value"],
-      "outputs": [],
-      "props": {}
-    }
-  ],
-  "edges": [
-    {
-      "from_node": "start",
-      "from_port": "next",
-      "to_node": "checkFlag",
-      "to_port": "input"
-    },
-    {
-      "from_node": "checkFlag",
-      "from_port": "then",
-      "to_node": "enabledTransform",
-      "to_port": "value"
-    },
-    {
-      "from_node": "checkFlag",
-      "from_port": "else",
-      "to_node": "disabledTransform",
-      "to_port": "value"
-    },
-    {
-      "from_node": "enabledTransform",
-      "from_port": "done",
-      "to_node": "finish",
-      "to_port": "value"
-    },
-    {
-      "from_node": "disabledTransform",
-      "from_port": "done",
-      "to_node": "finish",
-      "to_port": "value"
+      "id": "flow.branching",
+      "name": "Branching Flow",
+      "entry_nodes": ["start"],
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "eventEntry",
+          "name": "OnEvent",
+          "inputs": [],
+          "outputs": ["next"],
+          "props": {}
+        },
+        {
+          "id": "checkFlag",
+          "kind": "condition",
+          "name": "Check Flag",
+          "inputs": ["input"],
+          "outputs": ["then", "else"],
+          "props": {
+            "expression": "providers.flags.isEnabled",
+            "true_port": "then",
+            "false_port": "else"
+          }
+        },
+        {
+          "id": "enabledTransform",
+          "kind": "transform",
+          "name": "Enabled Path",
+          "inputs": ["value"],
+          "outputs": ["done"],
+          "props": {
+            "expression": "providers.data.value + 10"
+          }
+        },
+        {
+          "id": "disabledTransform",
+          "kind": "transform",
+          "name": "Disabled Path",
+          "inputs": ["value"],
+          "outputs": ["done"],
+          "props": {
+            "expression": "providers.data.value - 5"
+          }
+        },
+        {
+          "id": "finish",
+          "kind": "return",
+          "name": "Finish",
+          "inputs": ["value"],
+          "outputs": [],
+          "props": {}
+        }
+      ],
+      "edges": [
+        {
+          "from_node": "start",
+          "from_port": "next",
+          "to_node": "checkFlag",
+          "to_port": "input"
+        },
+        {
+          "from_node": "checkFlag",
+          "from_port": "then",
+          "to_node": "enabledTransform",
+          "to_port": "value"
+        },
+        {
+          "from_node": "checkFlag",
+          "from_port": "else",
+          "to_node": "disabledTransform",
+          "to_port": "value"
+        },
+        {
+          "from_node": "enabledTransform",
+          "from_port": "done",
+          "to_node": "finish",
+          "to_port": "value"
+        },
+        {
+          "from_node": "disabledTransform",
+          "from_port": "done",
+          "to_node": "finish",
+          "to_port": "value"
+        }
+      ]
     }
   ]
 }

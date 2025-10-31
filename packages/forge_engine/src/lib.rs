@@ -11,6 +11,7 @@ mod plugin_sandbox;
 mod react_renderer;
 mod renderer_adapter;
 mod renderer_registry;
+mod schema_writer;
 mod state_adapter;
 
 /// Semantic version for the analysis report JSON contract emitted by the CLI.
@@ -36,6 +37,8 @@ pub use plugin_sandbox::{PluginSandbox, SandboxError};
 pub use react_renderer::ReactRenderer;
 pub use renderer_adapter::{RenderContext, RenderDialect, RenderOptions, RendererAdapter};
 pub use renderer_registry::{all_renderers, get_renderer, renderer_names, RendererDescriptor};
+pub use schema_writer::{ForgeGraph, SchemaDocument, SchemaProject, SchemaWriter};
+use jsonschema::JSONSchema;
 pub use state_adapter::{ResolvedBinding, RiverpodAdapter, StateAdapter};
 
 use once_cell::sync::Lazy;
@@ -56,6 +59,30 @@ fn skip_generic_block(input: &str) -> Option<&str> {
     if first != '<' {
         return None;
     }
+
+/// Validates a serialized schema document against the Forge schema.
+pub fn validate_graph_schema(payload: &str) -> Result<(), String> {
+    static VALIDATOR: once_cell::sync::OnceCell<JSONSchema> = once_cell::sync::OnceCell::new();
+    let validator = VALIDATOR.get_or_try_init(|| {
+        let schema_src = include_str!("../../forge_spec/graph_schema.json");
+        let json: serde_json::Value = serde_json::from_str(schema_src)
+            .map_err(|err| format!("Invalid graph schema JSON: {err}"))?;
+        JSONSchema::compile(&json)
+            .map_err(|err| format!("Failed to compile graph schema: {err}"))
+    })?;
+
+    let value: serde_json::Value = serde_json::from_str(payload)
+        .map_err(|err| format!("Export did not produce valid JSON: {err}"))?;
+
+    if let Err(errors) = validator.validate(&value) {
+        let messages: Vec<String> = errors
+            .map(|err| format!("{} at {}", err, err.instance_path))
+            .collect();
+        return Err(messages.join("\n"));
+    }
+
+    Ok(())
+}
     depth += 1;
 
     while let Some((idx, ch)) = chars.next() {
