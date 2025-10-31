@@ -1,10 +1,7 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 use forge_engine::{
-    react_renderer::ReactRenderer,
-    read_graph,
-    renderer_adapter::{RenderContext, RenderDialect, RenderOptions},
-    state_adapter::RiverpodAdapter,
-    ScreenGraph,
+    read_graph, ReactRenderer, RenderContext, RenderDialect, RenderOptions, RendererAdapter,
+    RiverpodAdapter, ScreenGraph,
 };
 use std::path::Path;
 

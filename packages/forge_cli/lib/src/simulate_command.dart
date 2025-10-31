@@ -35,7 +35,8 @@ class SimulateCommand extends Command<int> {
       )
       ..addOption(
         'max-trace',
-        help: 'Override maximum trace entries retained (defaults to engine default).',
+        help:
+            'Override maximum trace entries retained (defaults to engine default).',
       );
   }
 
@@ -83,18 +84,24 @@ class SimulateCommand extends Command<int> {
 
     final entry = argResults?['entry'] as String?;
     if (entry != null) {
-      args..add('--entry')..add(entry);
+      args
+        ..add('--entry')
+        ..add(entry);
     }
 
     if (providerFile != null) {
-      args..add('--providers')..add(providerFile.absolute.path);
+      args
+        ..add('--providers')
+        ..add(providerFile.absolute.path);
     }
 
     final output = argResults?['output'] as String?;
     File? outputFile;
     if (output != null) {
       outputFile = File(output);
-      args..add('--output')..add(outputFile.absolute.path);
+      args
+        ..add('--output')
+        ..add(outputFile.absolute.path);
     }
 
     final maxSteps = argResults?['max-steps'] as String?;
@@ -103,7 +110,9 @@ class SimulateCommand extends Command<int> {
       if (parsed == null || parsed <= 0) {
         throw UsageException('--max-steps must be a positive integer', usage);
       }
-      args..add('--max-steps')..add(parsed.toString());
+      args
+        ..add('--max-steps')
+        ..add(parsed.toString());
     }
 
     final maxTrace = argResults?['max-trace'] as String?;
@@ -112,7 +121,9 @@ class SimulateCommand extends Command<int> {
       if (parsed == null || parsed <= 0) {
         throw UsageException('--max-trace must be a positive integer', usage);
       }
-      args..add('--max-trace')..add(parsed.toString());
+      args
+        ..add('--max-trace')
+        ..add(parsed.toString());
     }
 
     final processResult = await Process.run(

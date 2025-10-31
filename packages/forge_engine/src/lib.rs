@@ -8,6 +8,7 @@ mod plugin_registry;
 mod plugin_sandbox;
 mod react_renderer;
 mod renderer_adapter;
+mod renderer_registry;
 mod state_adapter;
 
 /// Semantic version for the analysis report JSON contract emitted by the CLI.
@@ -29,7 +30,8 @@ pub use merge_engine::{merge_screen_graphs, MergeConflict, MergeOutcome};
 pub use plugin_registry::{PluginDescriptor, PluginRegistry, PluginRegistryError};
 pub use plugin_sandbox::{PluginSandbox, SandboxError};
 pub use react_renderer::ReactRenderer;
-pub use renderer_adapter::{RenderContext, RenderOptions, RendererAdapter};
+pub use renderer_adapter::{RenderContext, RenderDialect, RenderOptions, RendererAdapter};
+pub use renderer_registry::{all_renderers, get_renderer, renderer_names, RendererDescriptor};
 pub use state_adapter::{ResolvedBinding, RiverpodAdapter, StateAdapter};
 
 use once_cell::sync::Lazy;

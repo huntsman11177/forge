@@ -1,10 +1,11 @@
 use clap::{Parser, Subcommand};
 use forge_engine::{
-    build_graphs_from_source, simulate_flow, AnalysisOutcome, AnalyzerService, EvalConfig,
-    LogicError, LogicGraph,
+    build_graphs_from_source, get_renderer, read_graph, renderer_names, simulate_flow,
+    AnalysisOutcome, AnalyzerService, EvalConfig, LogicError, LogicGraph, RenderContext,
+    RenderOptions, RiverpodAdapter,
 };
 use serde::Serialize;
-use serde_json::Value;
+use serde_json::{self, Value};
 use std::{
     collections::HashMap,
     fs,
@@ -142,6 +143,15 @@ enum Commands {
         #[arg(long)]
         max_trace: Option<usize>,
     },
+    /// Renders a Forge UI graph into target framework code
+    Render {
+        #[arg(long, short = 'f')]
+        file: PathBuf,
+        #[arg(long, short = 't', value_name = "FRAMEWORK")]
+        framework: String,
+        #[arg(long, short = 'o')]
+        out_dir: Option<PathBuf>,
+    },
 }
 
 #[derive(Debug, Serialize)]
@@ -189,6 +199,11 @@ fn run_with_args(args: &[String]) -> Result<i32, String> {
             max_steps,
             max_trace,
         ),
+        Some(Commands::Render {
+            file,
+            framework,
+            out_dir,
+        }) => run_render(&file, &framework, out_dir.as_deref()),
         None => {
             let file = cli
                 .file
@@ -292,6 +307,85 @@ fn execute_analyze(file: &Path, confidence: f32) -> Result<AnalysisReport, Strin
         outcomes,
         total_conflicts,
     })
+}
+
+fn run_render(file: &Path, framework: &str, out_dir: Option<&Path>) -> Result<i32, String> {
+    let graph = read_graph(file).map_err(|err| err.to_string())?;
+
+    let descriptor = get_renderer(framework).ok_or_else(|| {
+        format!(
+            "Unsupported framework '{framework}'. Supported frameworks: {}",
+            format_supported_frameworks()
+        )
+    })?;
+
+    let renderer = descriptor.instantiate();
+    let state_adapter = RiverpodAdapter::new();
+    let options = RenderOptions {
+        pretty: true,
+        include_comments: false,
+        dialect: descriptor.dialect,
+    };
+    let ctx = RenderContext::new(0, &state_adapter, &options);
+
+    let unit = renderer
+        .render_tree(&graph.root, &ctx)
+        .map_err(|err| err.message.clone())?;
+
+    let output_code = unit.code;
+    let dependencies = unit.dependencies;
+
+    if let Some(dir) = out_dir {
+        fs::create_dir_all(dir)
+            .map_err(|err| format!("Failed to create output directory {}: {err}", dir.display()))?;
+        let output_path = dir.join(format!("main.{}", descriptor.file_extension));
+        fs::write(&output_path, &output_code)
+            .map_err(|err| format!("Failed to write {}: {err}", output_path.display()))?;
+        println!(
+            "Rendered {} source to {}",
+            descriptor.name,
+            output_path.display()
+        );
+
+        if !dependencies.is_empty() {
+            let deps_path = dir.join("dependencies.json");
+            let deps_json = serde_json::to_string_pretty(&dependencies)
+                .map_err(|err| format!("Failed to serialize dependencies: {err}"))?;
+            fs::write(&deps_path, deps_json)
+                .map_err(|err| format!("Failed to write {}: {err}", deps_path.display()))?;
+            println!(
+                "Saved renderer dependencies to {}. Install these packages in your project.",
+                deps_path.display()
+            );
+        }
+    } else {
+        println!("{}", output_code);
+        if !dependencies.is_empty() {
+            eprintln!(
+                "\nDependencies required for {}:\n{}\nInstall these packages before running your app.",
+                descriptor.name,
+                format_dependencies(&dependencies)
+            );
+        }
+    }
+
+    Ok(0)
+}
+
+fn format_supported_frameworks() -> String {
+    let mut names = renderer_names();
+    names.sort_unstable();
+    names.join(", ")
+}
+
+fn format_dependencies(deps: &HashMap<String, String>) -> String {
+    let mut entries: Vec<_> = deps.iter().collect();
+    entries.sort_by(|a, b| a.0.cmp(b.0));
+    entries
+        .into_iter()
+        .map(|(name, version)| format!("  - {name}@{version}"))
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 // Re-export types needed by the binary when compiled separately.

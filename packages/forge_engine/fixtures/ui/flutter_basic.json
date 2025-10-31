@@ -1,0 +1,19 @@
+{
+  "id": "flutter_basic",
+  "root": {
+    "widget": "Scaffold",
+    "props": {},
+    "children": [
+      {
+        "widget": "Text",
+        "props": {
+          "data": {
+            "type": "literal",
+            "value": "Hello Forge"
+          }
+        },
+        "children": []
+      }
+    ]
+  }
+}

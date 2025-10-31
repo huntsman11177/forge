@@ -15,3 +15,8 @@ build/
 packages/**/build/
 .flutter-plugins
 .flutter-plugins-dependencies
+.vscode
+.windsurf
+.github
+main.md
+plan.md
