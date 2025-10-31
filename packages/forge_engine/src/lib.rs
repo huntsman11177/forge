@@ -6,6 +6,7 @@ mod logic_types;
 mod merge_engine;
 mod plugin_registry;
 mod plugin_sandbox;
+mod react_renderer;
 mod renderer_adapter;
 mod state_adapter;
 
@@ -27,6 +28,7 @@ pub use logic_types::{
 pub use merge_engine::{merge_screen_graphs, MergeConflict, MergeOutcome};
 pub use plugin_registry::{PluginDescriptor, PluginRegistry, PluginRegistryError};
 pub use plugin_sandbox::{PluginSandbox, SandboxError};
+pub use react_renderer::ReactRenderer;
 pub use renderer_adapter::{RenderContext, RenderOptions, RendererAdapter};
 pub use state_adapter::{ResolvedBinding, RiverpodAdapter, StateAdapter};
 

@@ -1,0 +1,19 @@
+{
+  "id": "react_basic",
+  "root": {
+    "widget": "App",
+    "props": {},
+    "children": [
+      {
+        "widget": "Button",
+        "props": {
+          "text": {
+            "type": "literal",
+            "value": "Click Me"
+          }
+        },
+        "children": []
+      }
+    ]
+  }
+}
