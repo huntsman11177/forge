@@ -1,8 +1,10 @@
 mod analyzer_service;
+mod angular_renderer;
 mod expr;
 mod flutter_renderer;
 mod logic_engine;
 mod logic_types;
+mod manifest;
 mod merge_engine;
 mod plugin_registry;
 mod plugin_sandbox;
@@ -17,6 +19,7 @@ pub const ANALYSIS_REPORT_VERSION: &str = "1.0.0";
 pub use analyzer_service::{
     AnalysisDecision, AnalysisOutcome, AnalysisStrategy, AnalyzerInvocation, AnalyzerService,
 };
+pub use angular_renderer::AngularRenderer;
 pub use expr::{
     eval_expression, parse_expression, BinaryOp, EvalContext, Expr, ExprError, ExprResult, UnaryOp,
 };
@@ -26,6 +29,7 @@ pub use logic_types::{
     BuiltinLogicNodeKind, EvalResult, EvalTraceEntry, ExprValue, Flow, LogicEdge, LogicGraph,
     LogicNode,
 };
+pub use manifest::{generate_manifest, Manifest, ManifestKind};
 pub use merge_engine::{merge_screen_graphs, MergeConflict, MergeOutcome};
 pub use plugin_registry::{PluginDescriptor, PluginRegistry, PluginRegistryError};
 pub use plugin_sandbox::{PluginSandbox, SandboxError};

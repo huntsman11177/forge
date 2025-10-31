@@ -1,7 +1,7 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 use forge_engine::{
-    read_graph, ReactRenderer, RenderContext, RenderDialect, RenderOptions, RendererAdapter,
-    RiverpodAdapter, ScreenGraph,
+    read_graph, AngularRenderer, ReactRenderer, RenderContext, RenderDialect, RenderOptions,
+    RendererAdapter, RiverpodAdapter, ScreenGraph,
 };
 use std::path::Path;
 
@@ -27,5 +27,21 @@ fn bench_react(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_react);
+fn bench_angular(c: &mut Criterion) {
+    let graph = load_fixture("angular_basic");
+    let renderer = AngularRenderer;
+    let adapter = RiverpodAdapter::new();
+    let options = RenderOptions {
+        pretty: true,
+        include_comments: false,
+        dialect: RenderDialect::Html,
+    };
+    let ctx = RenderContext::new(0, &adapter, &options);
+
+    c.bench_function("angular_render_basic", |b| {
+        b.iter(|| renderer.render_tree(&graph.root, &ctx))
+    });
+}
+
+criterion_group!(benches, bench_react, bench_angular);
 criterion_main!(benches);

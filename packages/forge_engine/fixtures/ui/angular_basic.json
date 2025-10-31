@@ -1,0 +1,27 @@
+{
+  "id": "angular_basic",
+  "root": {
+    "widget": "app-root",
+    "props": {},
+    "children": [
+      {
+        "widget": "button",
+        "props": {
+          "ngClass": {
+            "type": "literal",
+            "value": "primary"
+          },
+          "disabled": {
+            "type": "expression",
+            "expression": "isDisabled"
+          },
+          "ariaLabel": {
+            "type": "literal",
+            "value": "Submit"
+          }
+        },
+        "children": []
+      }
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 use forge_engine::{
-    read_graph, ReactRenderer, RenderContext, RenderDialect, RenderOptions, RendererAdapter,
-    RiverpodAdapter, ScreenGraph,
+    read_graph, AngularRenderer, ReactRenderer, RenderContext, RenderDialect, RenderOptions,
+    RendererAdapter, RiverpodAdapter, ScreenGraph,
 };
 use std::path::Path;
 
@@ -29,4 +29,26 @@ fn react_renderer_emits_jsx() {
     assert!(unit.code.contains("<Button"));
     assert!(unit.code.contains("text=\"Click Me\""));
     assert!(unit.code.contains("/>") || unit.code.contains("</Button>"));
+}
+
+#[test]
+fn angular_renderer_emits_html() {
+    let graph = load_ui_fixture("angular_basic");
+    let renderer = AngularRenderer;
+    let adapter = RiverpodAdapter::new();
+    let options = RenderOptions {
+        pretty: true,
+        include_comments: false,
+        dialect: RenderDialect::Html,
+    };
+    let ctx = RenderContext::new(0, &adapter, &options);
+
+    let unit = renderer
+        .render_tree(&graph.root, &ctx)
+        .expect("render angular tree");
+
+    assert!(unit.code.contains("<button"));
+    assert!(unit.code.contains("ngClass=\"primary\""));
+    assert!(unit.code.contains("[disabled]=\"isDisabled\""));
+    assert!(unit.code.contains("ariaLabel=\"Submit\""));
 }

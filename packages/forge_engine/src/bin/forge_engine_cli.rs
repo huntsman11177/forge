@@ -1,8 +1,8 @@
 use clap::{Parser, Subcommand};
 use forge_engine::{
-    build_graphs_from_source, get_renderer, read_graph, renderer_names, simulate_flow,
-    AnalysisOutcome, AnalyzerService, EvalConfig, LogicError, LogicGraph, RenderContext,
-    RenderOptions, RiverpodAdapter,
+    build_graphs_from_source, generate_manifest, get_renderer, read_graph, renderer_names,
+    simulate_flow, AnalysisOutcome, AnalyzerService, EvalConfig, LogicError, LogicGraph,
+    ManifestKind, RenderContext, RenderOptions, RiverpodAdapter,
 };
 use serde::Serialize;
 use serde_json::{self, Value};
@@ -151,6 +151,8 @@ enum Commands {
         framework: String,
         #[arg(long, short = 'o')]
         out_dir: Option<PathBuf>,
+        #[arg(long)]
+        emit_manifest: bool,
     },
 }
 
@@ -203,7 +205,8 @@ fn run_with_args(args: &[String]) -> Result<i32, String> {
             file,
             framework,
             out_dir,
-        }) => run_render(&file, &framework, out_dir.as_deref()),
+            emit_manifest,
+        }) => run_render(&file, &framework, out_dir.as_deref(), emit_manifest),
         None => {
             let file = cli
                 .file
@@ -309,7 +312,12 @@ fn execute_analyze(file: &Path, confidence: f32) -> Result<AnalysisReport, Strin
     })
 }
 
-fn run_render(file: &Path, framework: &str, out_dir: Option<&Path>) -> Result<i32, String> {
+fn run_render(
+    file: &Path,
+    framework: &str,
+    out_dir: Option<&Path>,
+    emit_manifest: bool,
+) -> Result<i32, String> {
     let graph = read_graph(file).map_err(|err| err.to_string())?;
 
     let descriptor = get_renderer(framework).ok_or_else(|| {
@@ -358,6 +366,27 @@ fn run_render(file: &Path, framework: &str, out_dir: Option<&Path>) -> Result<i3
                 deps_path.display()
             );
         }
+
+        if emit_manifest {
+            if let Some(kind) = descriptor.manifest_kind {
+                if let Some(manifest) = generate_manifest(kind, &dependencies) {
+                    let manifest_path = dir.join(manifest.file_name);
+                    fs::write(&manifest_path, manifest.contents).map_err(|err| {
+                        format!("Failed to write {}: {err}", manifest_path.display())
+                    })?;
+                    println!(
+                        "Wrote {} manifest to {}",
+                        descriptor.name,
+                        manifest_path.display()
+                    );
+                }
+            } else {
+                eprintln!(
+                    "Manifest emission requested, but renderer '{}' does not define a manifest format.",
+                    descriptor.name
+                );
+            }
+        }
     } else {
         println!("{}", output_code);
         if !dependencies.is_empty() {
@@ -366,6 +395,22 @@ fn run_render(file: &Path, framework: &str, out_dir: Option<&Path>) -> Result<i3
                 descriptor.name,
                 format_dependencies(&dependencies)
             );
+        }
+
+        if emit_manifest {
+            if let Some(kind) = descriptor.manifest_kind {
+                if let Some(manifest) = generate_manifest(kind, &dependencies) {
+                    println!(
+                        "\n--- {} ({}) ---\n{}",
+                        manifest.file_name, descriptor.name, manifest.contents
+                    );
+                }
+            } else {
+                eprintln!(
+                    "Manifest emission requested, but renderer '{}' does not define a manifest format.",
+                    descriptor.name
+                );
+            }
         }
     }
 

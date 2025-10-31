@@ -5,7 +5,7 @@ import 'package:args/command_runner.dart';
 import 'engine_bridge.dart';
 import 'workspace_context.dart';
 
-const _supportedFrameworks = ['flutter', 'react'];
+const _supportedFrameworks = ['flutter', 'react', 'angular'];
 const _defaultFramework = 'flutter';
 
 class RenderCommand extends Command<int> {
@@ -28,6 +28,11 @@ class RenderCommand extends Command<int> {
         'out-dir',
         abbr: 'o',
         help: 'Optional output directory for rendered code.',
+      )
+      ..addFlag(
+        'emit-manifest',
+        help: 'Emit framework-specific dependency manifest (e.g., pubspec.yaml, package.json).',
+        defaultsTo: false,
       );
   }
 
@@ -68,6 +73,10 @@ class RenderCommand extends Command<int> {
       args
         ..add('--out-dir')
         ..add(outDir);
+    }
+
+    if (argResults?.flag('emit-manifest') == true) {
+      args.add('--emit-manifest');
     }
 
     final result = await runEngine(_workspace, args);

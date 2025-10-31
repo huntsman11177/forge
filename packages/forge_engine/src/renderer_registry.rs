@@ -1,11 +1,15 @@
 use crate::renderer_adapter::{RenderDialect, RendererAdapter};
-use crate::{flutter_renderer::FlutterRenderer, react_renderer::ReactRenderer};
+use crate::{
+    angular_renderer::AngularRenderer, flutter_renderer::FlutterRenderer, manifest::ManifestKind,
+    react_renderer::ReactRenderer,
+};
 
 /// Metadata describing a renderer implementation available to the engine.
 pub struct RendererDescriptor {
     pub name: &'static str,
     pub dialect: RenderDialect,
     pub file_extension: &'static str,
+    pub manifest_kind: Option<ManifestKind>,
     factory: fn() -> Box<dyn RendererAdapter>,
 }
 
@@ -24,18 +28,31 @@ fn make_react_renderer() -> Box<dyn RendererAdapter> {
     Box::new(ReactRenderer)
 }
 
+fn make_angular_renderer() -> Box<dyn RendererAdapter> {
+    Box::new(AngularRenderer)
+}
+
 static RENDERERS: &[RendererDescriptor] = &[
     RendererDescriptor {
         name: "flutter",
         dialect: RenderDialect::Dart,
         file_extension: "dart",
+        manifest_kind: Some(ManifestKind::PubspecYaml),
         factory: make_flutter_renderer,
     },
     RendererDescriptor {
         name: "react",
         dialect: RenderDialect::Jsx,
         file_extension: "jsx",
+        manifest_kind: Some(ManifestKind::PackageJson),
         factory: make_react_renderer,
+    },
+    RendererDescriptor {
+        name: "angular",
+        dialect: RenderDialect::Html,
+        file_extension: "html",
+        manifest_kind: Some(ManifestKind::PackageJson),
+        factory: make_angular_renderer,
     },
 ];
 
