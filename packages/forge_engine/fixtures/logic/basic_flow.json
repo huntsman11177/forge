@@ -1,0 +1,49 @@
+{
+  "id": "flow.basic",
+  "name": "Basic Flow",
+  "entry_nodes": ["start"],
+  "nodes": [
+    {
+      "id": "start",
+      "kind": "eventEntry",
+      "name": "OnStart",
+      "inputs": [],
+      "outputs": ["next"],
+      "props": {}
+    },
+    {
+      "id": "transform",
+      "kind": "transform",
+      "name": "Prep",
+      "inputs": ["input"],
+      "outputs": ["ready"],
+      "props": {
+        "expression": "user.name"
+      }
+    },
+    {
+      "id": "return",
+      "kind": "return",
+      "name": "Done",
+      "inputs": ["value"],
+      "outputs": [],
+      "props": {
+        "expression": "result"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from_node": "start",
+      "from_port": "next",
+      "to_node": "transform",
+      "to_port": "input"
+    },
+    {
+      "from_node": "transform",
+      "from_port": "ready",
+      "to_node": "return",
+      "to_port": "value"
+    }
+  ]
+}

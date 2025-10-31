@@ -50,7 +50,7 @@ impl AnalyzerService {
     ) -> AnalysisOutcome {
         let decision = self.evaluate(native_confidence);
 
-        let mut quick_owned = quick_graph;
+        let quick_owned = quick_graph;
         let quick_ref = &quick_owned;
         let mut analyzer_graph_out: Option<ScreenGraph> = None;
         let mut analyzer_invoked = false;

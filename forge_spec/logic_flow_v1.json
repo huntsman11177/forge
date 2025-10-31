@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://forge.dev/spec/logic_flow_v1.json",
+  "title": "Forge Logic Flow v1",
+  "type": "object",
+  "required": ["id", "nodes", "edges"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "metadata": { "type": "object" },
+    "entry_nodes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "kind": { "type": ["string", "null"] },
+          "custom_kind": { "type": "string" },
+          "props": { "type": "object" },
+          "inputs": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "outputs": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "metadata": { "type": "object" }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from_node", "to_node"],
+        "additionalProperties": false,
+        "properties": {
+          "from_node": { "type": "string" },
+          "from_port": { "type": ["string", "null"] },
+          "to_node": { "type": "string" },
+          "to_port": { "type": ["string", "null"] },
+          "metadata": { "type": "object" }
+        }
+      }
+    }
+  }
+}

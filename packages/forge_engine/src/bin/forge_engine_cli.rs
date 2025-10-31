@@ -1,7 +1,12 @@
 use clap::{Parser, Subcommand};
-use forge_engine::{build_graphs_from_source, AnalysisOutcome, AnalyzerService};
+use forge_engine::{
+    build_graphs_from_source, simulate_flow, AnalysisOutcome, AnalyzerService, EvalConfig,
+    LogicError, LogicGraph,
+};
 use serde::Serialize;
+use serde_json::Value;
 use std::{
+    collections::HashMap,
     fs,
     path::{Path, PathBuf},
     process,
@@ -16,6 +21,92 @@ struct Cli {
 
     #[command(subcommand)]
     command: Option<Commands>,
+}
+
+fn run_simulate(
+    flow_id: &str,
+    graph_path: &Path,
+    entry: Option<&str>,
+    providers_path: Option<&Path>,
+    output: Option<PathBuf>,
+    max_steps: Option<usize>,
+    max_trace: Option<usize>,
+) -> Result<i32, String> {
+    let graph = read_logic_graph(graph_path)?;
+    let providers = match providers_path {
+        Some(path) => Some(read_json_map(path)?),
+        None => None,
+    };
+
+    let mut config = EvalConfig::default();
+    if let Some(steps) = max_steps {
+        config.max_steps = steps;
+    }
+    if let Some(trace) = max_trace {
+        config.max_trace = trace;
+    }
+
+    let result = simulate_flow(&graph, flow_id, entry, providers.as_ref(), config)
+        .map_err(|err| format_logic_error(err, flow_id))?;
+
+    let summary = SimulationOutput {
+        flow_id: flow_id.to_string(),
+        entry: entry.map(ToString::to_string),
+        result,
+    };
+
+    let json = serde_json::to_string_pretty(&summary)
+        .map_err(|err| format!("Failed to serialize simulation result: {err}"))?;
+
+    if let Some(path) = output {
+        if let Some(parent) = path.parent() {
+            fs::create_dir_all(parent).map_err(|err| {
+                format!(
+                    "Failed to create output directory {}: {err}",
+                    parent.display()
+                )
+            })?;
+        }
+        fs::write(&path, &json).map_err(|err| {
+            format!(
+                "Failed to write simulation output to {}: {err}",
+                path.display()
+            )
+        })?;
+    } else {
+        println!("{json}");
+    }
+
+    Ok(0)
+}
+
+fn read_logic_graph(path: &Path) -> Result<LogicGraph, String> {
+    let contents = fs::read_to_string(path)
+        .map_err(|err| format!("Failed to read logic graph {}: {err}", path.display()))?;
+    serde_json::from_str(&contents)
+        .map_err(|err| format!("Failed to parse logic graph {}: {err}", path.display()))
+}
+
+fn read_json_map(path: &Path) -> Result<HashMap<String, Value>, String> {
+    let contents = fs::read_to_string(path)
+        .map_err(|err| format!("Failed to read providers {}: {err}", path.display()))?;
+    serde_json::from_str(&contents)
+        .map_err(|err| format!("Failed to parse providers {}: {err}", path.display()))
+}
+
+fn format_logic_error(err: LogicError, flow_id: &str) -> String {
+    match err {
+        LogicError::FlowNotFound(_) => format!("Flow '{flow_id}' was not found in the logic graph"),
+        other => other.to_string(),
+    }
+}
+
+#[derive(Debug, Serialize)]
+struct SimulationOutput {
+    flow_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    entry: Option<String>,
+    result: forge_engine::EvalResult,
 }
 
 #[derive(Debug, Subcommand)]
@@ -33,6 +124,23 @@ enum Commands {
         output: Option<PathBuf>,
         #[arg(long, default_value_t = 0.5)]
         confidence: f32,
+    },
+    /// Simulates a logic flow and returns its evaluation trace
+    Simulate {
+        #[arg(long)]
+        flow: String,
+        #[arg(long)]
+        graph: PathBuf,
+        #[arg(long)]
+        entry: Option<String>,
+        #[arg(long)]
+        providers: Option<PathBuf>,
+        #[arg(long)]
+        output: Option<PathBuf>,
+        #[arg(long)]
+        max_steps: Option<usize>,
+        #[arg(long)]
+        max_trace: Option<usize>,
     },
 }
 
@@ -64,6 +172,23 @@ fn run_with_args(args: &[String]) -> Result<i32, String> {
             output,
             confidence,
         }) => run_analyze_file(&file, output, confidence),
+        Some(Commands::Simulate {
+            flow,
+            graph,
+            entry,
+            providers,
+            output,
+            max_steps,
+            max_trace,
+        }) => run_simulate(
+            &flow,
+            &graph,
+            entry.as_deref(),
+            providers.as_deref(),
+            output,
+            max_steps,
+            max_trace,
+        ),
         None => {
             let file = cli
                 .file

@@ -1,7 +1,12 @@
 mod analyzer_service;
+mod expr;
+mod flutter_renderer;
+mod logic_engine;
+mod logic_types;
 mod merge_engine;
 mod plugin_registry;
 mod plugin_sandbox;
+mod renderer_adapter;
 mod state_adapter;
 
 /// Semantic version for the analysis report JSON contract emitted by the CLI.
@@ -10,9 +15,19 @@ pub const ANALYSIS_REPORT_VERSION: &str = "1.0.0";
 pub use analyzer_service::{
     AnalysisDecision, AnalysisOutcome, AnalysisStrategy, AnalyzerInvocation, AnalyzerService,
 };
+pub use expr::{
+    eval_expression, parse_expression, BinaryOp, EvalContext, Expr, ExprError, ExprResult, UnaryOp,
+};
+pub use flutter_renderer::{generate_dart_module, generate_stateless_widget, FlutterRenderer};
+pub use logic_engine::{simulate_flow, EvalConfig, LogicError};
+pub use logic_types::{
+    BuiltinLogicNodeKind, EvalResult, EvalTraceEntry, ExprValue, Flow, LogicEdge, LogicGraph,
+    LogicNode,
+};
 pub use merge_engine::{merge_screen_graphs, MergeConflict, MergeOutcome};
 pub use plugin_registry::{PluginDescriptor, PluginRegistry, PluginRegistryError};
 pub use plugin_sandbox::{PluginSandbox, SandboxError};
+pub use renderer_adapter::{RenderContext, RenderOptions, RendererAdapter};
 pub use state_adapter::{ResolvedBinding, RiverpodAdapter, StateAdapter};
 
 use once_cell::sync::Lazy;
@@ -778,93 +793,6 @@ pub fn build_graphs_from_source(source: &str) -> Vec<ScreenGraph> {
             root,
         })
         .collect()
-}
-
-fn render_props(props: &BTreeMap<String, PropValue>, indent: usize) -> String {
-    if props.is_empty() {
-        return String::new();
-    }
-
-    let mut rendered = String::new();
-    for (key, value) in props {
-        if !rendered.is_empty() {
-            rendered.push_str(",\n");
-        }
-        rendered.push_str(&" ".repeat(indent));
-        rendered.push_str(key);
-        rendered.push_str(": ");
-        rendered.push_str(&render_prop_value(value));
-    }
-    rendered
-}
-
-fn render_children(children: &[WidgetNode], indent: usize) -> String {
-    if children.is_empty() {
-        return String::new();
-    }
-
-    let child_indent = indent + 2;
-    let mut rendered = String::new();
-    rendered.push_str(&" ".repeat(indent));
-    rendered.push_str("children: [\n");
-    for child in children {
-        rendered.push_str(&render_widget(child, child_indent));
-        rendered.push_str(",\n");
-    }
-    rendered.push_str(&" ".repeat(indent));
-    rendered.push_str("]");
-    rendered
-}
-
-fn render_widget(node: &WidgetNode, indent: usize) -> String {
-    let mut buffer = String::new();
-    buffer.push_str(&" ".repeat(indent));
-    buffer.push_str(&node.widget);
-    buffer.push_str("(\n");
-
-    let props = render_props(&node.props, indent + 2);
-    if !props.is_empty() {
-        buffer.push_str(&props);
-        if !props.ends_with('\n') {
-            buffer.push_str(",\n");
-        } else {
-            buffer.push_str(",");
-        }
-        buffer.push('\n');
-    }
-
-    let children = render_children(&node.children, indent + 2);
-    if !children.is_empty() {
-        buffer.push_str(&children);
-        buffer.push_str("\n");
-    }
-
-    buffer.push_str(&" ".repeat(indent));
-    buffer.push_str(")");
-    buffer
-}
-
-/// Generates Dart code for a stateless widget from a [ScreenGraph].
-pub fn generate_stateless_widget(screen: &ScreenGraph) -> String {
-    let mut buffer = String::new();
-    buffer.push_str(&format!(
-        "class {} extends StatelessWidget {{\n  const {}({{ super.key }});\n\n  @override\n  Widget build(BuildContext context) {{\n    return {}\n  }}\n}}\n",
-        screen.id,
-        screen.id,
-        render_widget(&screen.root, 6)
-    ));
-    buffer
-}
-
-/// Generates a Dart module containing all provided [ScreenGraph] widgets.
-pub fn generate_dart_module(graphs: &[ScreenGraph]) -> String {
-    let mut buffer = String::new();
-    buffer.push_str("import 'package:flutter/widgets.dart';\n\n");
-    for graph in graphs {
-        buffer.push_str(&generate_stateless_widget(graph));
-        buffer.push('\n');
-    }
-    buffer
 }
 
 #[cfg(test)]
