@@ -86,6 +86,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "http",
+      "rootUri": "file:///C:/Users/subra/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.5.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "http_multi_server",
       "rootUri": "file:///C:/Users/subra/AppData/Local/Pub/Cache/hosted/pub.dev/http_multi_server-3.2.2",
       "packageUri": "lib/",
@@ -108,6 +114,12 @@
       "rootUri": "file:///C:/Users/subra/AppData/Local/Pub/Cache/hosted/pub.dev/js-0.7.2",
       "packageUri": "lib/",
       "languageVersion": "3.7"
+    },
+    {
+      "name": "json_schema",
+      "rootUri": "file:///C:/Users/subra/AppData/Local/Pub/Cache/hosted/pub.dev/json_schema-5.2.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "lints",
@@ -174,6 +186,18 @@
       "rootUri": "file:///C:/Users/subra/AppData/Local/Pub/Cache/hosted/pub.dev/pub_semver-2.2.0",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "quiver",
+      "rootUri": "file:///C:/Users/subra/AppData/Local/Pub/Cache/hosted/pub.dev/quiver-3.2.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "rfc_6901",
+      "rootUri": "file:///C:/Users/subra/AppData/Local/Pub/Cache/hosted/pub.dev/rfc_6901-0.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
     },
     {
       "name": "shelf",
@@ -264,6 +288,12 @@
       "rootUri": "file:///C:/Users/subra/AppData/Local/Pub/Cache/hosted/pub.dev/typed_data-1.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
+    },
+    {
+      "name": "uri",
+      "rootUri": "file:///C:/Users/subra/AppData/Local/Pub/Cache/hosted/pub.dev/uri-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "vm_service",

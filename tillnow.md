@@ -18,6 +18,8 @@
 ## CLI workflow
 - The Dart CLI entrypoint wires `forge` subcommands for import, render, analyze, simulate, and version reporting.
 - `AnalyzeCommand` validates inputs, forwards to the Rust engine binary, surfaces stdout/stderr, and prints conflict summaries derived from the merged report.
+- Import pipeline utilities (`ParserUtils`) wrap analyzer AST parsing to classify stateless/stateful widget classes, map state objects back to widgets, and generate stable screen identifiers for reverse import flows.
+- New complex Flutter fixtures (`advanced_screen.dart`, `advanced_screen_v2.dart`) exercise nested layouts, form controls, and animation-ready patterns, expanding coverage for CLI importer testing.
 
 ## Manifest & dependency emission
 - Engine render invocations persist a `dependencies.json` manifest alongside generated sources when `--out-dir` is supplied, capturing runtime packages per renderer.

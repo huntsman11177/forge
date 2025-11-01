@@ -1,0 +1,529 @@
+{
+  "forge_schema_version": "1.0.0",
+  "logic": [],
+  "project": {
+    "id": "advanced_screen",
+    "name": "advanced_screen"
+  },
+  "screens": [
+    {
+      "id": "advanced__screen_contact_search_screen",
+      "name": "advanced__screen_contact_search_screen",
+      "root": {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [],
+                "props": {
+                  "arg0": {
+                    "type": "literal",
+                    "value": "People"
+                  }
+                },
+                "widget": "Text"
+              }
+            ],
+            "props": {
+              "backgroundColor": {
+                "type": "literal",
+                "value": "#FF00BF6D"
+              },
+              "centerTitle": {
+                "type": "literal",
+                "value": false
+              },
+              "elevation": {
+                "type": "literal",
+                "value": 0
+              },
+              "foregroundColor": {
+                "expression": "Colors.white",
+                "type": "expression"
+              }
+            },
+            "widget": "AppBar"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "props": {
+                      "bottom": {
+                        "type": "literal",
+                        "value": 16.0
+                      }
+                    },
+                    "widget": "only"
+                  },
+                  {
+                    "children": [],
+                    "props": {
+                      "arg0": {
+                        "type": "literal",
+                        "value": 16.0
+                      },
+                      "arg1": {
+                        "type": "literal",
+                        "value": 0
+                      },
+                      "arg2": {
+                        "type": "literal",
+                        "value": 16.0
+                      },
+                      "arg3": {
+                        "type": "literal",
+                        "value": 16.0
+                      }
+                    },
+                    "widget": "fromLTRB"
+                  },
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "children": [],
+                                "props": {
+                                  "arg0": {
+                                    "expression": "Icons.search",
+                                    "type": "expression"
+                                  },
+                                  "color": {
+                                    "type": "literal",
+                                    "value": null
+                                  }
+                                },
+                                "widget": "Icon"
+                              },
+                              {
+                                "children": [],
+                                "props": {
+                                  "color": {
+                                    "type": "literal",
+                                    "value": null
+                                  }
+                                },
+                                "widget": "TextStyle"
+                              },
+                              {
+                                "children": [],
+                                "props": {
+                                  "horizontal": {
+                                    "expression": "16.0 * 1.5",
+                                    "type": "expression"
+                                  },
+                                  "vertical": {
+                                    "type": "literal",
+                                    "value": 16.0
+                                  }
+                                },
+                                "widget": "symmetric"
+                              },
+                              {
+                                "children": [],
+                                "props": {
+                                  "borderRadius": {
+                                    "type": "literal",
+                                    "value": null
+                                  },
+                                  "borderSide": {
+                                    "expression": "BorderSide.none",
+                                    "type": "expression"
+                                  }
+                                },
+                                "widget": "OutlineInputBorder"
+                              }
+                            ],
+                            "props": {
+                              "fillColor": {
+                                "expression": "Colors.white",
+                                "type": "expression"
+                              },
+                              "filled": {
+                                "type": "literal",
+                                "value": true
+                              },
+                              "hintText": {
+                                "type": "literal",
+                                "value": "Search"
+                              }
+                            },
+                            "widget": "InputDecoration"
+                          }
+                        ],
+                        "props": {
+                          "autofocus": {
+                            "type": "literal",
+                            "value": true
+                          },
+                          "onChanged": {
+                            "expression": "(value) {}",
+                            "type": "expression"
+                          },
+                          "textInputAction": {
+                            "expression": "TextInputAction.search",
+                            "type": "expression"
+                          }
+                        },
+                        "widget": "TextFormField"
+                      }
+                    ],
+                    "props": {},
+                    "widget": "Form"
+                  }
+                ],
+                "props": {
+                  "color": {
+                    "type": "literal",
+                    "value": "#FF00BF6D"
+                  }
+                },
+                "widget": "Container"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [],
+                            "props": {},
+                            "widget": "RecentSearchContacts"
+                          },
+                          {
+                            "children": [],
+                            "props": {
+                              "height": {
+                                "type": "literal",
+                                "value": 16.0
+                              }
+                            },
+                            "widget": "SizedBox"
+                          },
+                          {
+                            "children": [
+                              {
+                                "children": [],
+                                "props": {
+                                  "horizontal": {
+                                    "type": "literal",
+                                    "value": 16.0
+                                  }
+                                },
+                                "widget": "symmetric"
+                              },
+                              {
+                                "children": [],
+                                "props": {
+                                  "arg0": {
+                                    "type": "literal",
+                                    "value": "Phone contacts"
+                                  },
+                                  "style": {
+                                    "type": "literal",
+                                    "value": null
+                                  }
+                                },
+                                "widget": "Text"
+                              }
+                            ],
+                            "props": {},
+                            "widget": "Padding"
+                          }
+                        ],
+                        "props": {
+                          "crossAxisAlignment": {
+                            "expression": "CrossAxisAlignment.start",
+                            "type": "expression"
+                          }
+                        },
+                        "widget": "Column"
+                      }
+                    ],
+                    "props": {},
+                    "widget": "SingleChildScrollView"
+                  }
+                ],
+                "props": {},
+                "widget": "Expanded"
+              }
+            ],
+            "props": {},
+            "widget": "Column"
+          }
+        ],
+        "props": {
+          "backgroundColor": {
+            "expression": "Colors.white",
+            "type": "expression"
+          }
+        },
+        "widget": "Scaffold"
+      }
+    },
+    {
+      "id": "advanced__screen_recent_search_contacts",
+      "name": "advanced__screen_recent_search_contacts",
+      "root": {
+        "children": [
+          {
+            "children": [],
+            "props": {
+              "horizontal": {
+                "type": "literal",
+                "value": 16.0
+              }
+            },
+            "widget": "symmetric"
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "props": {
+                  "arg0": {
+                    "type": "literal",
+                    "value": "Recent search"
+                  },
+                  "style": {
+                    "type": "literal",
+                    "value": null
+                  }
+                },
+                "widget": "Text"
+              },
+              {
+                "children": [],
+                "props": {
+                  "height": {
+                    "type": "literal",
+                    "value": 16.0
+                  }
+                },
+                "widget": "SizedBox"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "props": {
+                      "children": {
+                        "expression": "[]",
+                        "type": "expression"
+                      }
+                    },
+                    "widget": "Stack"
+                  }
+                ],
+                "props": {
+                  "height": {
+                    "type": "literal",
+                    "value": 56
+                  },
+                  "width": {
+                    "type": "literal",
+                    "value": "double.infinity"
+                  }
+                },
+                "widget": "SizedBox"
+              }
+            ],
+            "props": {
+              "crossAxisAlignment": {
+                "expression": "CrossAxisAlignment.start",
+                "type": "expression"
+              }
+            },
+            "widget": "Column"
+          }
+        ],
+        "props": {},
+        "widget": "Padding"
+      }
+    },
+    {
+      "id": "advanced__screen_rounded_counter",
+      "name": "advanced__screen_rounded_counter",
+      "root": {
+        "children": [
+          {
+            "children": [],
+            "props": {
+              "color": {
+                "expression": "Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2E2F45) : const Color(0xFFEBFAF3)",
+                "type": "expression"
+              },
+              "shape": {
+                "expression": "BoxShape.circle",
+                "type": "expression"
+              }
+            },
+            "widget": "BoxDecoration"
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "props": {
+                  "arg0": {
+                    "expression": "\"$total+\"",
+                    "type": "expression"
+                  },
+                  "style": {
+                    "expression": "Theme.of(context).textTheme.titleMedium",
+                    "type": "expression"
+                  }
+                },
+                "widget": "Text"
+              }
+            ],
+            "props": {},
+            "widget": "Center"
+          }
+        ],
+        "props": {
+          "height": {
+            "type": "literal",
+            "value": 52
+          },
+          "width": {
+            "type": "literal",
+            "value": 52
+          }
+        },
+        "widget": "Container"
+      }
+    },
+    {
+      "id": "advanced__screen_contact_card",
+      "name": "advanced__screen_contact_card",
+      "root": {
+        "children": [
+          {
+            "children": [],
+            "props": {
+              "horizontal": {
+                "type": "literal",
+                "value": 16.0
+              },
+              "vertical": {
+                "expression": "16.0 / 2",
+                "type": "expression"
+              }
+            },
+            "widget": "symmetric"
+          },
+          {
+            "children": [],
+            "props": {
+              "image": {
+                "expression": "image",
+                "type": "expression"
+              },
+              "isActive": {
+                "expression": "isActive",
+                "type": "expression"
+              },
+              "radius": {
+                "type": "literal",
+                "value": 28
+              }
+            },
+            "widget": "CircleAvatarWithActiveIndicator"
+          },
+          {
+            "children": [],
+            "props": {
+              "arg0": {
+                "expression": "name",
+                "type": "expression"
+              }
+            },
+            "widget": "Text"
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "props": {
+                  "top": {
+                    "expression": "16.0 / 2",
+                    "type": "expression"
+                  }
+                },
+                "widget": "only"
+              },
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "props": {
+                      "color": {
+                        "type": "literal",
+                        "value": null
+                      }
+                    },
+                    "widget": "TextStyle"
+                  }
+                ],
+                "props": {
+                  "arg0": {
+                    "expression": "number",
+                    "type": "expression"
+                  }
+                },
+                "widget": "Text"
+              }
+            ],
+            "props": {},
+            "widget": "Padding"
+          }
+        ],
+        "props": {
+          "onTap": {
+            "expression": "press",
+            "type": "expression"
+          }
+        },
+        "widget": "ListTile"
+      }
+    },
+    {
+      "id": "advanced__screen_circle_avatar_with_active_indicator",
+      "name": "advanced__screen_circle_avatar_with_active_indicator",
+      "root": {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [],
+                "props": {
+                  "arg0": {
+                    "type": "literal",
+                    "value": "image!"
+                  }
+                },
+                "widget": "NetworkImage"
+              }
+            ],
+            "props": {
+              "radius": {
+                "expression": "radius",
+                "type": "expression"
+              }
+            },
+            "widget": "CircleAvatar"
+          }
+        ],
+        "props": {},
+        "widget": "Stack"
+      }
+    }
+  ]
+}

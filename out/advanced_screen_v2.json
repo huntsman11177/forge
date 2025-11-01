@@ -1,0 +1,831 @@
+{
+  "forge_schema_version": "1.0.0",
+  "logic": [],
+  "project": {
+    "id": "advanced_screen_v2",
+    "name": "advanced_screen_v2"
+  },
+  "screens": [
+    {
+      "id": "advanced__screen__v_2_my_app",
+      "name": "advanced__screen__v_2_my_app",
+      "root": {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [],
+                            "props": {
+                              "arg0": {
+                                "expression": "Icons.menu",
+                                "type": "expression"
+                              },
+                              "color": {
+                                "expression": "Colors.white",
+                                "type": "expression"
+                              },
+                              "size": {
+                                "type": "literal",
+                                "value": 30
+                              }
+                            },
+                            "widget": "Icon"
+                          }
+                        ],
+                        "props": {
+                          "margin": {
+                            "type": "literal",
+                            "value": null
+                          }
+                        },
+                        "widget": "Container"
+                      }
+                    ],
+                    "props": {
+                      "backgroundColor": {
+                        "expression": "primary",
+                        "type": "expression"
+                      },
+                      "elevation": {
+                        "type": "literal",
+                        "value": 0
+                      }
+                    },
+                    "widget": "AppBar"
+                  },
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [],
+                            "props": {
+                              "left": {
+                                "type": "literal",
+                                "value": 30
+                              },
+                              "top": {
+                                "type": "literal",
+                                "value": 30
+                              }
+                            },
+                            "widget": "only"
+                          },
+                          {
+                            "children": [
+                              {
+                                "children": [],
+                                "props": {
+                                  "color": {
+                                    "expression": "Colors.white",
+                                    "type": "expression"
+                                  },
+                                  "fontSize": {
+                                    "type": "literal",
+                                    "value": 35
+                                  },
+                                  "fontWeight": {
+                                    "expression": "FontWeight.bold",
+                                    "type": "expression"
+                                  },
+                                  "letterSpacing": {
+                                    "type": "literal",
+                                    "value": 2
+                                  }
+                                },
+                                "widget": "TextStyle"
+                              }
+                            ],
+                            "props": {
+                              "arg0": {
+                                "type": "literal",
+                                "value": "Generation"
+                              }
+                            },
+                            "widget": "Text"
+                          }
+                        ],
+                        "props": {},
+                        "widget": "Padding"
+                      },
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "children": [
+                                  {
+                                    "children": [],
+                                    "props": {
+                                      "borderRadius": {
+                                        "type": "literal",
+                                        "value": null
+                                      },
+                                      "color": {
+                                        "expression": "Colors.white",
+                                        "type": "expression"
+                                      }
+                                    },
+                                    "widget": "BoxDecoration"
+                                  }
+                                ],
+                                "props": {
+                                  "margin": {
+                                    "type": "literal",
+                                    "value": null
+                                  }
+                                },
+                                "widget": "Container"
+                              },
+                              {
+                                "children": [
+                                  {
+                                    "children": [
+                                      {
+                                        "children": [
+                                          {
+                                            "children": [
+                                              {
+                                                "children": [
+                                                  {
+                                                    "children": [],
+                                                    "props": {
+                                                      "border": {
+                                                        "type": "literal",
+                                                        "value": null
+                                                      },
+                                                      "borderRadius": {
+                                                        "type": "literal",
+                                                        "value": null
+                                                      }
+                                                    },
+                                                    "widget": "BoxDecoration"
+                                                  },
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [
+                                                          {
+                                                            "children": [],
+                                                            "props": {
+                                                              "borderRadius": {
+                                                                "type": "literal",
+                                                                "value": null
+                                                              },
+                                                              "color": {
+                                                                "type": "literal",
+                                                                "value": null
+                                                              }
+                                                            },
+                                                            "widget": "BoxDecoration"
+                                                          },
+                                                          {
+                                                            "children": [],
+                                                            "props": {
+                                                              "arg0": {
+                                                                "expression": "Icons.attach_money",
+                                                                "type": "expression"
+                                                              },
+                                                              "color": {
+                                                                "expression": "Colors.white",
+                                                                "type": "expression"
+                                                              },
+                                                              "size": {
+                                                                "type": "literal",
+                                                                "value": 40
+                                                              }
+                                                            },
+                                                            "widget": "Icon"
+                                                          }
+                                                        ],
+                                                        "props": {
+                                                          "height": {
+                                                            "type": "literal",
+                                                            "value": 80
+                                                          },
+                                                          "width": {
+                                                            "type": "literal",
+                                                            "value": 70
+                                                          }
+                                                        },
+                                                        "widget": "Container"
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "props": {
+                                                          "arg0": {
+                                                            "expression": "Icons.flash_on",
+                                                            "type": "expression"
+                                                          },
+                                                          "color": {
+                                                            "type": "literal",
+                                                            "value": null
+                                                          },
+                                                          "size": {
+                                                            "type": "literal",
+                                                            "value": 40
+                                                          }
+                                                        },
+                                                        "widget": "Icon"
+                                                      }
+                                                    ],
+                                                    "props": {
+                                                      "mainAxisAlignment": {
+                                                        "expression": "MainAxisAlignment.start",
+                                                        "type": "expression"
+                                                      }
+                                                    },
+                                                    "widget": "Row"
+                                                  }
+                                                ],
+                                                "props": {
+                                                  "height": {
+                                                    "type": "literal",
+                                                    "value": 70
+                                                  },
+                                                  "margin": {
+                                                    "type": "literal",
+                                                    "value": null
+                                                  },
+                                                  "width": {
+                                                    "type": "literal",
+                                                    "value": 120
+                                                  }
+                                                },
+                                                "widget": "Container"
+                                              }
+                                            ],
+                                            "props": {
+                                              "alignment": {
+                                                "expression": "Alignment.centerLeft",
+                                                "type": "expression"
+                                              },
+                                              "height": {
+                                                "expression": "centralBoxSize",
+                                                "type": "expression"
+                                              }
+                                            },
+                                            "widget": "Container"
+                                          },
+                                          {
+                                            "children": [
+                                              {
+                                                "children": [
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [],
+                                                        "props": {
+                                                          "color": {
+                                                            "expression": "primaryDark",
+                                                            "type": "expression"
+                                                          },
+                                                          "fontSize": {
+                                                            "type": "literal",
+                                                            "value": 16
+                                                          },
+                                                          "fontWeight": {
+                                                            "expression": "FontWeight.bold",
+                                                            "type": "expression"
+                                                          }
+                                                        },
+                                                        "widget": "TextStyle"
+                                                      }
+                                                    ],
+                                                    "props": {
+                                                      "arg0": {
+                                                        "type": "literal",
+                                                        "value": null
+                                                      }
+                                                    },
+                                                    "widget": "Text"
+                                                  },
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [],
+                                                        "props": {
+                                                          "color": {
+                                                            "expression": "primaryDark",
+                                                            "type": "expression"
+                                                          },
+                                                          "fontSize": {
+                                                            "type": "literal",
+                                                            "value": 66
+                                                          },
+                                                          "fontWeight": {
+                                                            "expression": "FontWeight.bold",
+                                                            "type": "expression"
+                                                          }
+                                                        },
+                                                        "widget": "TextStyle"
+                                                      }
+                                                    ],
+                                                    "props": {
+                                                      "arg0": {
+                                                        "type": "literal",
+                                                        "value": null
+                                                      }
+                                                    },
+                                                    "widget": "Text"
+                                                  }
+                                                ],
+                                                "props": {
+                                                  "crossAxisAlignment": {
+                                                    "expression": "CrossAxisAlignment.start",
+                                                    "type": "expression"
+                                                  }
+                                                },
+                                                "widget": "Column"
+                                              }
+                                            ],
+                                            "props": {
+                                              "alignment": {
+                                                "expression": "Alignment.centerLeft",
+                                                "type": "expression"
+                                              },
+                                              "height": {
+                                                "expression": "centralBoxSize",
+                                                "type": "expression"
+                                              },
+                                              "padding": {
+                                                "type": "literal",
+                                                "value": null
+                                              }
+                                            },
+                                            "widget": "Container"
+                                          },
+                                          {
+                                            "children": [
+                                              {
+                                                "children": [
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [],
+                                                        "props": {
+                                                          "color": {
+                                                            "expression": "accent",
+                                                            "type": "expression"
+                                                          },
+                                                          "fontSize": {
+                                                            "type": "literal",
+                                                            "value": 16
+                                                          },
+                                                          "fontWeight": {
+                                                            "expression": "FontWeight.bold",
+                                                            "type": "expression"
+                                                          }
+                                                        },
+                                                        "widget": "TextStyle"
+                                                      }
+                                                    ],
+                                                    "props": {
+                                                      "arg0": {
+                                                        "type": "literal",
+                                                        "value": null
+                                                      }
+                                                    },
+                                                    "widget": "Text"
+                                                  },
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [],
+                                                        "props": {
+                                                          "color": {
+                                                            "expression": "accent",
+                                                            "type": "expression"
+                                                          },
+                                                          "fontSize": {
+                                                            "type": "literal",
+                                                            "value": 36
+                                                          }
+                                                        },
+                                                        "widget": "TextStyle"
+                                                      }
+                                                    ],
+                                                    "props": {
+                                                      "arg0": {
+                                                        "type": "literal",
+                                                        "value": null
+                                                      }
+                                                    },
+                                                    "widget": "Text"
+                                                  }
+                                                ],
+                                                "props": {
+                                                  "crossAxisAlignment": {
+                                                    "expression": "CrossAxisAlignment.start",
+                                                    "type": "expression"
+                                                  }
+                                                },
+                                                "widget": "Column"
+                                              }
+                                            ],
+                                            "props": {
+                                              "alignment": {
+                                                "expression": "Alignment.centerLeft",
+                                                "type": "expression"
+                                              },
+                                              "height": {
+                                                "expression": "centralBoxSize",
+                                                "type": "expression"
+                                              },
+                                              "padding": {
+                                                "type": "literal",
+                                                "value": null
+                                              }
+                                            },
+                                            "widget": "Container"
+                                          },
+                                          {
+                                            "children": [
+                                              {
+                                                "children": [
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [],
+                                                        "props": {
+                                                          "arg0": {
+                                                            "expression": "Icons.lightbulb_outline",
+                                                            "type": "expression"
+                                                          },
+                                                          "color": {
+                                                            "expression": "Colors.white",
+                                                            "type": "expression"
+                                                          },
+                                                          "size": {
+                                                            "type": "literal",
+                                                            "value": 40
+                                                          }
+                                                        },
+                                                        "widget": "Icon"
+                                                      }
+                                                    ],
+                                                    "props": {
+                                                      "onPressed": {
+                                                        "expression": "() {}",
+                                                        "type": "expression"
+                                                      }
+                                                    },
+                                                    "widget": "FlatButton"
+                                                  },
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [],
+                                                        "props": {
+                                                          "arg0": {
+                                                            "expression": "Icons.wb_sunny",
+                                                            "type": "expression"
+                                                          },
+                                                          "color": {
+                                                            "expression": "Colors.white",
+                                                            "type": "expression"
+                                                          },
+                                                          "size": {
+                                                            "type": "literal",
+                                                            "value": 40
+                                                          }
+                                                        },
+                                                        "widget": "Icon"
+                                                      }
+                                                    ],
+                                                    "props": {
+                                                      "onPressed": {
+                                                        "expression": "() {}",
+                                                        "type": "expression"
+                                                      }
+                                                    },
+                                                    "widget": "FlatButton"
+                                                  },
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [],
+                                                        "props": {
+                                                          "arg0": {
+                                                            "expression": "Icons.brightness_3",
+                                                            "type": "expression"
+                                                          },
+                                                          "color": {
+                                                            "expression": "Colors.white",
+                                                            "type": "expression"
+                                                          },
+                                                          "size": {
+                                                            "type": "literal",
+                                                            "value": 40
+                                                          }
+                                                        },
+                                                        "widget": "Icon"
+                                                      }
+                                                    ],
+                                                    "props": {
+                                                      "onPressed": {
+                                                        "expression": "() {}",
+                                                        "type": "expression"
+                                                      }
+                                                    },
+                                                    "widget": "FlatButton"
+                                                  }
+                                                ],
+                                                "props": {
+                                                  "mainAxisAlignment": {
+                                                    "expression": "MainAxisAlignment.spaceEvenly",
+                                                    "type": "expression"
+                                                  }
+                                                },
+                                                "widget": "Row"
+                                              },
+                                              {
+                                                "children": [],
+                                                "props": {
+                                                  "borderRadius": {
+                                                    "type": "literal",
+                                                    "value": null
+                                                  },
+                                                  "color": {
+                                                    "expression": "accent",
+                                                    "type": "expression"
+                                                  }
+                                                },
+                                                "widget": "BoxDecoration"
+                                              }
+                                            ],
+                                            "props": {
+                                              "height": {
+                                                "type": "literal",
+                                                "value": 100
+                                              },
+                                              "margin": {
+                                                "type": "literal",
+                                                "value": null
+                                              }
+                                            },
+                                            "widget": "Container"
+                                          }
+                                        ],
+                                        "props": {
+                                          "crossAxisAlignment": {
+                                            "expression": "CrossAxisAlignment.start",
+                                            "type": "expression"
+                                          },
+                                          "mainAxisAlignment": {
+                                            "expression": "MainAxisAlignment.end",
+                                            "type": "expression"
+                                          }
+                                        },
+                                        "widget": "Column"
+                                      }
+                                    ],
+                                    "props": {
+                                      "position": {
+                                        "type": "literal",
+                                        "value": null
+                                      }
+                                    },
+                                    "widget": "SlideTransition"
+                                  }
+                                ],
+                                "props": {
+                                  "opacity": {
+                                    "expression": "_animationBody",
+                                    "type": "expression"
+                                  }
+                                },
+                                "widget": "FadeTransition"
+                              },
+                              {
+                                "children": [
+                                  {
+                                    "children": [
+                                      {
+                                        "children": [
+                                          {
+                                            "children": [
+                                              {
+                                                "children": [
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [
+                                                          {
+                                                            "children": [],
+                                                            "props": {
+                                                              "borderRadius": {
+                                                                "type": "literal",
+                                                                "value": null
+                                                              },
+                                                              "color": {
+                                                                "expression": "Colors.white",
+                                                                "type": "expression"
+                                                              }
+                                                            },
+                                                            "widget": "BoxDecoration"
+                                                          }
+                                                        ],
+                                                        "props": {},
+                                                        "widget": "Container"
+                                                      }
+                                                    ],
+                                                    "props": {
+                                                      "height": {
+                                                        "type": "literal",
+                                                        "value": 80
+                                                      },
+                                                      "margin": {
+                                                        "type": "literal",
+                                                        "value": null
+                                                      },
+                                                      "width": {
+                                                        "type": "literal",
+                                                        "value": 90
+                                                      }
+                                                    },
+                                                    "widget": "Container"
+                                                  }
+                                                ],
+                                                "props": {
+                                                  "alignment": {
+                                                    "expression": "Alignment.topRight",
+                                                    "type": "expression"
+                                                  }
+                                                },
+                                                "widget": "Align"
+                                              },
+                                              {
+                                                "children": [
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [
+                                                          {
+                                                            "children": [],
+                                                            "props": {
+                                                              "arg0": {
+                                                                "expression": "Icons.lightbulb_outline",
+                                                                "type": "expression"
+                                                              },
+                                                              "color": {
+                                                                "expression": "Colors.white",
+                                                                "type": "expression"
+                                                              },
+                                                              "size": {
+                                                                "type": "literal",
+                                                                "value": 350
+                                                              }
+                                                            },
+                                                            "widget": "Icon"
+                                                          }
+                                                        ],
+                                                        "props": {
+                                                          "shaderCallback": {
+                                                            "expression": "(Rect bounds) {return LinearGradient(begin: Alignment.topLeft, end: Alignment(-0.4, -0.8), stops: [0.0, 0.5, 0.5, 1], colors: [accentLight, accentLight, accent, accent], tileMode: TileMode.repeated).createShader(bounds);}",
+                                                            "type": "expression"
+                                                          }
+                                                        },
+                                                        "widget": "ShaderMask"
+                                                      }
+                                                    ],
+                                                    "props": {
+                                                      "width": {
+                                                        "type": "literal",
+                                                        "value": 200
+                                                      }
+                                                    },
+                                                    "widget": "Container"
+                                                  }
+                                                ],
+                                                "props": {
+                                                  "alignment": {
+                                                    "expression": "Alignment.topRight",
+                                                    "type": "expression"
+                                                  }
+                                                },
+                                                "widget": "Align"
+                                              },
+                                              {
+                                                "children": [
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [],
+                                                        "props": {
+                                                          "borderRadius": {
+                                                            "type": "literal",
+                                                            "value": null
+                                                          },
+                                                          "color": {
+                                                            "type": "literal",
+                                                            "value": null
+                                                          }
+                                                        },
+                                                        "widget": "BoxDecoration"
+                                                      }
+                                                    ],
+                                                    "props": {
+                                                      "height": {
+                                                        "type": "literal",
+                                                        "value": 130
+                                                      },
+                                                      "margin": {
+                                                        "type": "literal",
+                                                        "value": null
+                                                      },
+                                                      "width": {
+                                                        "type": "literal",
+                                                        "value": 130
+                                                      }
+                                                    },
+                                                    "widget": "Container"
+                                                  }
+                                                ],
+                                                "props": {
+                                                  "alignment": {
+                                                    "expression": "Alignment.topRight",
+                                                    "type": "expression"
+                                                  }
+                                                },
+                                                "widget": "Align"
+                                              }
+                                            ],
+                                            "props": {},
+                                            "widget": "Stack"
+                                          }
+                                        ],
+                                        "props": {
+                                          "alignment": {
+                                            "expression": "Alignment.topRight",
+                                            "type": "expression"
+                                          }
+                                        },
+                                        "widget": "Align"
+                                      }
+                                    ],
+                                    "props": {
+                                      "position": {
+                                        "type": "literal",
+                                        "value": null
+                                      }
+                                    },
+                                    "widget": "SlideTransition"
+                                  }
+                                ],
+                                "props": {
+                                  "opacity": {
+                                    "expression": "_animationBulb",
+                                    "type": "expression"
+                                  }
+                                },
+                                "widget": "FadeTransition"
+                              }
+                            ],
+                            "props": {},
+                            "widget": "Stack"
+                          }
+                        ],
+                        "props": {},
+                        "widget": "Expanded"
+                      }
+                    ],
+                    "props": {
+                      "crossAxisAlignment": {
+                        "expression": "CrossAxisAlignment.start",
+                        "type": "expression"
+                      }
+                    },
+                    "widget": "Column"
+                  }
+                ],
+                "props": {
+                  "backgroundColor": {
+                    "expression": "primary",
+                    "type": "expression"
+                  }
+                },
+                "widget": "Scaffold"
+              }
+            ],
+            "props": {},
+            "widget": "Builder"
+          }
+        ],
+        "props": {
+          "debugShowCheckedModeBanner": {
+            "type": "literal",
+            "value": false
+          }
+        },
+        "widget": "MaterialApp"
+      }
+    }
+  ]
+}

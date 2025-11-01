@@ -1,10 +1,10 @@
 use clap::{Parser, Subcommand};
 use forge_engine::{
     build_graphs_from_source, generate_manifest, get_renderer, read_graph, renderer_names,
-    simulate_flow, validate_graph_schema, AnalysisOutcome, AnalyzerService, EvalConfig, ForgeGraph,
-    LogicError, LogicGraph, ManifestKind, RenderContext, RenderOptions, RiverpodAdapter,
-    SchemaProject, SchemaWriter,
+    simulate_flow, AnalysisOutcome, AnalyzerService, EvalConfig, ForgeGraph, LogicError, LogicGraph,
+    RenderContext, RenderOptions, RiverpodAdapter, SchemaProject, SchemaWriter,
 };
+use jsonschema::JSONSchema;
 use serde::Serialize;
 use serde_json::{self, Value};
 use std::{
@@ -67,7 +67,7 @@ fn run_export(
         .to_string_pretty()
         .map_err(|err| format!("Failed to serialize schema document: {err}"))?;
 
-    validate_graph_schema(&payload).map_err(|err| format!("Schema validation failed: {err}"))?;
+    validate_schema(&payload).map_err(|err| format!("Schema validation failed: {err}"))?;
 
     if let Some(path) = out {
         if let Some(parent) = path.parent() {
@@ -90,7 +90,7 @@ fn run_export(
 fn validate_schema(payload: &str) -> Result<(), String> {
     static VALIDATOR: once_cell::sync::OnceCell<JSONSchema> = once_cell::sync::OnceCell::new();
     let validator = VALIDATOR.get_or_try_init(|| {
-        let schema_src = include_str!("../../../forge_spec/graph_schema.json");
+        let schema_src = include_str!("../../../../forge_spec/graph_schema.json");
         let json: serde_json::Value = serde_json::from_str(schema_src)
             .map_err(|err| format!("Invalid graph schema JSON: {err}"))?;
         JSONSchema::compile(&json).map_err(|err| format!("Failed to compile graph schema: {err}"))

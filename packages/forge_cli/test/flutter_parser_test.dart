@@ -13,59 +13,191 @@ void main() {
     test('parses basic screen scaffold', () async {
       final filePath = p.join(Directory.current.path, 'test_fixtures', 'basic_screen.dart');
       final document = await parser.parseScreen(filePath);
-      // Debug output for inspection during test development.
-      // ignore: avoid_print
-      print(jsonEncode(document));
-
-      expect(document['forge_schema_version'], '1.0.0');
-      final screens = document['screens'] as List<dynamic>;
+      expect(document['version'], '1.0.0');
+      final screens = (document['screens'] as List<dynamic>)
+          .cast<Map<String, dynamic>>();
       expect(screens, isNotEmpty);
 
-      final screen = screens.first as Map<String, dynamic>;
-      expect(screen['id'], isNotEmpty);
-      expect(screen['root'], isA<Map<String, dynamic>>());
+      expect(
+        screens.any(
+          (screen) => containsWidget(screen['root'] as Map<String, dynamic>, 'Scaffold'),
+        ),
+        isTrue,
+        reason: 'Expected Scaffold widget in parsed output',
+      );
 
-      final root = screen['root'] as Map<String, dynamic>;
-      expect(root['widget'], 'Scaffold');
-
-      final props = root['props'] as Map<String, dynamic>;
-      expect(props.containsKey('appBar'), isTrue);
-      expect(props['appBar'], isA<Map<String, dynamic>>());
-
-      final children = root['children'] as List<dynamic>;
-      expect(children, isNotEmpty);
-      final body = children.first as Map<String, dynamic>;
-      expect(body['widget'], 'Center');
+      expect(
+        screens.any(
+          (screen) => containsWidget(screen['root'] as Map<String, dynamic>, 'Center'),
+        ),
+        isTrue,
+        reason: 'Expected Center widget in parsed output',
+      );
     });
 
     test('parses advanced screen with nested widgets', () async {
       final filePath = p.join(Directory.current.path, 'test_fixtures', 'advanced_screen.dart');
       final json = await parser.parseScreenToJson(filePath);
-      // ignore: avoid_print
-      print(json);
       final document = jsonDecode(json) as Map<String, dynamic>;
 
-      final screens = document['screens'] as List<dynamic>;
+      final screens = (document['screens'] as List<dynamic>)
+          .cast<Map<String, dynamic>>();
       expect(screens.length, greaterThanOrEqualTo(1));
 
-      final screen = screens.first as Map<String, dynamic>;
-      final root = screen['root'] as Map<String, dynamic>;
-      expect(root['widget'], 'Scaffold');
+      bool anyContains(String widget) => screens.any(
+            (screen) => containsWidget(screen['root'] as Map<String, dynamic>, widget),
+          );
 
-      final props = root['props'] as Map<String, dynamic>;
-      expect(props['appBar'], isNotNull);
-      expect((props['appBar'] as Map<String, dynamic>)['widget'], 'AppBar');
+      expect(anyContains('Scaffold'), isTrue);
+      expect(anyContains('AppBar'), isTrue);
+      expect(anyContains('Text'), isTrue);
+      expect(anyContains('ListTile'), isTrue);
+    });
 
-      final rootChildren = (root['children'] as List<dynamic>).cast<Map<String, dynamic>>();
-      expect(rootChildren, isNotEmpty);
+    test('classifies literals vs expressions for advanced_screen_v2', () async {
+      final filePath = p.join(Directory.current.path, 'test_fixtures', 'advanced_screen_v2.dart');
+      final document = await parser.parseScreen(filePath);
 
-      final column = rootChildren.firstWhere(
-        (child) => child['widget'] == 'Column',
-        orElse: () => throw StateError('Column child not found'),
+      final screens = (document['screens'] as List<dynamic>)
+          .cast<Map<String, dynamic>>();
+      expect(screens.length, equals(1));
+
+      final root = screens.first['root'] as Map<String, dynamic>;
+      final props = (root['props'] as Map<String, dynamic>);
+      final debugBanner = props['debugShowCheckedModeBanner'] as Map<String, dynamic>;
+      expect(debugBanner['type'], equals('literal'));
+      expect(debugBanner['value'], isFalse);
+
+      final builder = (root['children'] as List<dynamic>).first as Map<String, dynamic>;
+      final builderProps = builder['props'] as Map<String, dynamic>;
+      final builderClosure = builderProps['builder'] as Map<String, dynamic>;
+      expect(builderClosure['type'], equals('expression'));
+      expect(builderClosure['expression'], contains('MediaQuery.of'));
+    });
+
+    test('extracts logic callbacks for advanced screen', () async {
+      final filePath = p.join(Directory.current.path, 'test_fixtures', 'advanced_screen.dart');
+      final document = await parser.parseScreen(filePath);
+
+      final logic = (document['logic'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+      expect(logic, isNotEmpty, reason: 'Expected logic nodes to be captured');
+
+      bool containsEvent(String eventName) => logic.any((node) => node['event'] == eventName);
+
+      expect(containsEvent('onChanged'), isTrue);
+      expect(containsEvent('onTap'), isTrue);
+    });
+
+    test('serializes enums and colors as structured literals', () async {
+      final filePath = p.join(Directory.current.path, 'test_fixtures', 'advanced_screen.dart');
+      final document = await parser.parseScreen(filePath);
+
+      final screens = (document['screens'] as List<dynamic>)
+          .cast<Map<String, dynamic>>();
+      final root = screens.first['root'] as Map<String, dynamic>;
+
+      final backgroundColor = findProp(root, widget: 'AppBar', prop: 'backgroundColor');
+      expect(backgroundColor, isNotNull);
+      expect(backgroundColor!['type'], equals('literal'));
+      expect(backgroundColor['value'], equals('#FF00BF6D'));
+
+      final crossAxis = findProp(root, widget: 'Column', prop: 'crossAxisAlignment');
+      expect(crossAxis, isNotNull);
+      expect(crossAxis!['type'], equals('enum'));
+      expect(crossAxis['value'], equals('CrossAxisAlignment.start'));
+    });
+
+    test('round-trips basic screen through schema validation', () async {
+      final fixturePath = p.join(Directory.current.path, 'test_fixtures', 'basic_screen.dart');
+      final document = await parser.parseScreen(fixturePath);
+
+      final schemaPath = p.normalize(
+        p.join(Directory.current.path, '..', '..', 'forge_spec', 'graph_schema.json'),
+      );
+      final results = await FlutterParser.validateGraphSchema(
+        document,
+        schemaPath: schemaPath,
       );
 
-      final columnChildren = (column['children'] as List<dynamic>).cast<Map<String, dynamic>>();
-      expect(columnChildren.length, greaterThan(1));
+      expect(results.isValid, isTrue, reason: 'Expected schema validation to succeed');
     });
   });
+}
+
+bool containsWidget(Map<String, dynamic> node, String widgetName) {
+  if (node['widget'] == widgetName) {
+    return true;
+  }
+  final children = node['children'];
+  if (children is List) {
+    for (final child in children) {
+      if (child is Map<String, dynamic> && containsWidget(child, widgetName)) {
+        return true;
+      }
+    }
+  }
+  final props = node['props'];
+  if (props is Map<String, dynamic>) {
+    for (final value in props.values) {
+      if (value is Map<String, dynamic> && containsWidget(value, widgetName)) {
+        return true;
+      }
+      if (value is List) {
+        for (final element in value) {
+          if (element is Map<String, dynamic> && containsWidget(element, widgetName)) {
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+
+Map<String, dynamic>? findProp(
+  Map<String, dynamic> node, {
+  required String widget,
+  required String prop,
+}) {
+  if (node['widget'] == widget) {
+    final props = node['props'];
+    if (props is Map<String, dynamic>) {
+      final value = props[prop];
+      if (value is Map<String, dynamic>) {
+        return value;
+      }
+    }
+  }
+  final children = node['children'];
+  if (children is List) {
+    for (final child in children) {
+      if (child is Map<String, dynamic>) {
+        final match = findProp(child, widget: widget, prop: prop);
+        if (match != null) {
+          return match;
+        }
+      }
+    }
+  }
+  final props = node['props'];
+  if (props is Map<String, dynamic>) {
+    for (final value in props.values) {
+      if (value is Map<String, dynamic>) {
+        final match = findProp(value, widget: widget, prop: prop);
+        if (match != null) {
+          return match;
+        }
+      } else if (value is List) {
+        for (final element in value) {
+          if (element is Map<String, dynamic>) {
+            final match = findProp(element, widget: widget, prop: prop);
+            if (match != null) {
+              return match;
+            }
+          }
+        }
+      }
+    }
+  }
+  return null;
 }

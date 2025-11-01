@@ -74,6 +74,47 @@ Forge is a visual IDE and runtime for Flutter applications that turns UI design,
   ```
   Requires a release build of the engine (produced by `setup.sh` or `cargo build --release` in `packages/forge_engine`). Omit `--output` to stream JSON to stdout.
 
+- **Diff imported graphs against an existing baseline**
+  ```bash
+  dart run packages/forge_cli/bin/forge_cli.dart diff --baseline graphs/home.json --file lib/screens/home.dart --output build/diff.json
+  ```
+  Imports the Dart file, validates it against `forge_spec/graph_schema.json`, and compares it to the baseline graph. When differences exist the command exits with code `3`, prints a human-readable summary, and optionally writes structured diff details to `--output`.
+
+## Importing Flutter Screens
+
+Use the Forge CLI to translate Flutter widget trees into ForgeGraph JSON and validate the output against the canonical schema:
+
+```bash
+dart run packages/forge_cli/bin/forge_cli.dart import --file <path_to_dart_file> [--output screen.json]
+```
+
+- Parses the specified Dart file into Forge's screen graph format.
+- Automatically validates the JSON against `forge_spec/graph_schema.json`.
+- Prints a detailed error list and exits with code `2` if validation fails.
+- When `--output` is omitted, the JSON is written to stdout; success prints `✅ Schema validation passed.`
+
+Example round-trip:
+
+```bash
+dart run packages/forge_cli/bin/forge_cli.dart import --file test_fixtures/basic_screen.dart --output screen.json
+forge_engine_cli validate --file screen.json
+```
+
+### Diffing Forge graphs
+
+Use `forge diff` during reverse-import workflows to ensure code edits stay in sync with a stored ForgeGraph:
+
+```bash
+dart run packages/forge_cli/bin/forge_cli.dart diff --baseline graphs/home.json --file lib/screens/home.dart
+```
+
+- Exit code `0`: no differences detected.
+- Exit code `3`: differences found; check the textual report.
+- Exit code `2`: candidate graph failed schema validation.
+- Use `--output diff.json` to capture a structured report for tooling or CI.
+
+---
+
 ## System Architecture
 
 ```

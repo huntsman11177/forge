@@ -13,6 +13,9 @@ mod renderer_adapter;
 mod renderer_registry;
 mod schema_writer;
 mod state_adapter;
+mod runtime_context;
+mod widget_registry;
+mod theme_registry;
 
 /// Semantic version for the analysis report JSON contract emitted by the CLI.
 pub const ANALYSIS_REPORT_VERSION: &str = "1.0.0";
@@ -22,7 +25,7 @@ pub use analyzer_service::{
 };
 pub use angular_renderer::AngularRenderer;
 pub use expr::{
-    eval_expression, parse_expression, BinaryOp, EvalContext, Expr, ExprError, ExprResult, UnaryOp,
+    eval_expression, parse_expression, BinaryOp, Expr, ExprError, ExprResult, UnaryOp,
 };
 pub use flutter_renderer::{generate_dart_module, generate_stateless_widget, FlutterRenderer};
 pub use logic_engine::{simulate_flow, EvalConfig, LogicError};
@@ -38,6 +41,24 @@ pub use react_renderer::ReactRenderer;
 pub use renderer_adapter::{RenderContext, RenderDialect, RenderOptions, RendererAdapter};
 pub use renderer_registry::{all_renderers, get_renderer, renderer_names, RendererDescriptor};
 pub use schema_writer::{ForgeGraph, SchemaDocument, SchemaProject, SchemaWriter};
+pub use runtime_context::{RuntimeContext, ThemeHandle};
+pub use theme_registry::{
+    clear_themes,
+    get_theme,
+    list_themes,
+    register_theme,
+    ThemeData,
+    ThemeRegistryError,
+};
+pub use widget_registry::{
+    clear_registry as clear_widget_registry,
+    get_widget,
+    list_widgets,
+    register_widget,
+    PropDescriptor,
+    WidgetDescriptor,
+    WidgetRegistryError,
+};
 use jsonschema::JSONSchema;
 pub use state_adapter::{ResolvedBinding, RiverpodAdapter, StateAdapter};
 
@@ -64,7 +85,7 @@ fn skip_generic_block(input: &str) -> Option<&str> {
 pub fn validate_graph_schema(payload: &str) -> Result<(), String> {
     static VALIDATOR: once_cell::sync::OnceCell<JSONSchema> = once_cell::sync::OnceCell::new();
     let validator = VALIDATOR.get_or_try_init(|| {
-        let schema_src = include_str!("../../forge_spec/graph_schema.json");
+        let schema_src = include_str!("../../../forge_spec/graph_schema.json");
         let json: serde_json::Value = serde_json::from_str(schema_src)
             .map_err(|err| format!("Invalid graph schema JSON: {err}"))?;
         JSONSchema::compile(&json)

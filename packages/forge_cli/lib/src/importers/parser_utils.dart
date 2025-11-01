@@ -44,6 +44,51 @@ class ParserUtils {
         typeName.endsWith('.StatelessWidget');
   }
 
+  /// Returns `true` when [node] extends `StatefulWidget`.
+  static bool isStatefulWidget(ClassDeclaration node) {
+    final extendsClause = node.extendsClause;
+    if (extendsClause == null) {
+      return false;
+    }
+    final typeName = extendsClause.superclass.toSource();
+    return typeName == 'StatefulWidget' ||
+        typeName.endsWith('.StatefulWidget');
+  }
+
+  /// Returns `true` when [node] extends Flutter's `State<T>` (or a subclass
+  /// ending with `State`).
+  static bool isStateClass(ClassDeclaration node) {
+    final extendsClause = node.extendsClause;
+    if (extendsClause == null) {
+      return false;
+    }
+    final NamedType superclass = extendsClause.superclass;
+    final identifier = superclass.name2.lexeme;
+    if (!identifier.endsWith('State')) {
+      return false;
+    }
+    // Require at least one type argument so we can associate with a widget.
+    return superclass.typeArguments?.arguments.isNotEmpty ?? false;
+  }
+
+  /// Attempts to extract the associated stateful widget name from a state
+  /// class (e.g. `_MyAppState` -> `MyApp`).
+  static String? widgetNameFromState(ClassDeclaration node) {
+    final extendsClause = node.extendsClause;
+    final superclass = extendsClause?.superclass;
+    if (superclass is NamedType) {
+      final typeArguments = superclass.typeArguments;
+      if (typeArguments != null && typeArguments.arguments.isNotEmpty) {
+        final argument = typeArguments.arguments.first;
+        final source = argument.toSource();
+        if (source.isNotEmpty) {
+          return source.replaceAll(RegExp(r'<.*>'), '');
+        }
+      }
+    }
+    return null;
+  }
+
   /// Convenience helper for checking whether a [TypeAnnotation] refers to
   /// Flutter's `Widget` type (either directly or imported via alias).
   static bool returnsWidget(TypeAnnotation? type) {

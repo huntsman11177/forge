@@ -1,0 +1,94 @@
+{
+  "forge_schema_version": "1.0.0",
+  "logic": [],
+  "project": {
+    "id": "basic_screen",
+    "name": "basic_screen"
+  },
+  "screens": [
+    {
+      "id": "basic__screen_basic_screen",
+      "name": "basic__screen_basic_screen",
+      "root": {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [],
+                "props": {
+                  "arg0": {
+                    "type": "literal",
+                    "value": "Forge Demo"
+                  }
+                },
+                "widget": "Text"
+              }
+            ],
+            "props": {},
+            "widget": "AppBar"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "props": {
+                      "arg0": {
+                        "type": "literal",
+                        "value": "Hello Forge!"
+                      }
+                    },
+                    "widget": "Text"
+                  },
+                  {
+                    "children": [],
+                    "props": {
+                      "height": {
+                        "type": "literal",
+                        "value": 12
+                      }
+                    },
+                    "widget": "SizedBox"
+                  },
+                  {
+                    "children": [
+                      {
+                        "children": [],
+                        "props": {
+                          "arg0": {
+                            "type": "literal",
+                            "value": "Press"
+                          }
+                        },
+                        "widget": "Text"
+                      }
+                    ],
+                    "props": {
+                      "onPressed": {
+                        "type": "literal",
+                        "value": null
+                      }
+                    },
+                    "widget": "ElevatedButton"
+                  }
+                ],
+                "props": {
+                  "mainAxisSize": {
+                    "expression": "MainAxisSize.min",
+                    "type": "expression"
+                  }
+                },
+                "widget": "Column"
+              }
+            ],
+            "props": {},
+            "widget": "Center"
+          }
+        ],
+        "props": {},
+        "widget": "Scaffold"
+      }
+    }
+  ]
+}

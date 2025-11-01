@@ -54,21 +54,30 @@ String resolveEngineBinary(WorkspaceContext workspace) {
   final binaryName =
       platform == 'windows' ? 'forge_engine_cli.exe' : 'forge_engine_cli';
 
-  final binaryPath = p.join(
-    workspace.workspaceRoot,
-    'packages',
-    'forge_engine',
-    'target',
-    'release',
-    binaryName,
-  );
+  final candidatePaths = [
+    p.join(
+      workspace.workspaceRoot,
+      'packages',
+      'forge_engine',
+      'target',
+      'release',
+      binaryName,
+    ),
+    p.join(
+      workspace.workspaceRoot,
+      'target',
+      'release',
+      binaryName,
+    ),
+  ];
 
-  if (!File(binaryPath).existsSync()) {
-    throw WorkspaceContextException(
-      'Forge engine binary not found at $binaryPath. Run '
-      '`cargo build --release` inside packages/forge_engine to compile it.',
-    );
+  for (final path in candidatePaths) {
+    if (File(path).existsSync()) {
+      return path;
+    }
   }
 
-  return binaryPath;
+  throw WorkspaceContextException(
+    'Forge engine binary not found. Run `cargo build --release` inside packages/forge_engine to compile it.',
+  );
 }
